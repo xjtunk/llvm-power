@@ -25,11 +25,15 @@ enum FunctionalUnitStatus
 // Each functional unit has a name, onPower, current status, next clock, etc.
 struct FunctionalUnit
 {
+  // Current status of the functional unit.
   FunctionalUnitStatus status;
+  // name.
   stringbuf name;
+  // power that it consumes if fully on (peak power)
   double onPower;
   unsigned long long offLatency;
   unsigned long long onLatency;
+  // the next synchronization event takes place at this clock cycle.
   unsigned long long nextClock;
   FunctionalUnit()
   {
@@ -40,20 +44,29 @@ struct FunctionalUnit
 
 struct FunctionalUnitManager
 {
+  // Running total of the power.
   double totalPower;
+  // The last clock that was synchronized
   unsigned long long globalClock;
 
+  // This is the vector of functional units.
   dynarray<FunctionalUnit> functionalUnits;
+  // Gate all the functional units with the mask.
   void gateWithMask(const unsigned long long &mask, const unsigned long long &now);
+  // Query function to see if functional unit is available.
   bool functionalUnitAvailable(const unsigned long &unitNumber, const unsigned long long &now);
+  // turn off a functional unit.
   unsigned long long turnOff(const unsigned long &unitNumber, const unsigned long long &now);
+  // turn on a functional unit.
   unsigned long long turnOn(const unsigned long &unitNumber, const unsigned long long &now);
-  // synchronization function
+  // synchronization function for the entire functional unit vector
   void synchronize(const unsigned long long &now);
   void synchronize(const unsigned long &unitNumber, const unsigned long long &now);
 
   // IO
+  // Read an input (usually from fu.txt, and create the functional unit vector.
   int readFunctionalUnitFile(const char * filename);
+  // for debugging functional units' status.
   void dumpFunctionalUnits();
 };
 
