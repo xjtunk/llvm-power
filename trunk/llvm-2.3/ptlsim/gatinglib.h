@@ -35,17 +35,34 @@ struct FunctionalUnit
   unsigned long long onLatency;
   // the next synchronization event takes place at this clock cycle.
   unsigned long long nextClock;
+  
+  //Time since transition from OnTransition to On
+  unsigned long long onTime;
+  
+  //Time since last transition (use to calculate area under curve)
+  unsigned long long transitionTime;
+  
+  //Store this for conditions where an on transition is interrupted by an off transition or vice versa
+  double lastPeakPower;
+  
+  //running total of power
+  double totalPower;
+
   FunctionalUnit()
   {
     // turn on every functional unit by default.
     status=FUS_ON;
   }
+  
+  inline double getTotalPower()
+  {
+  	return totalPower;
+  }
 };
 
 struct FunctionalUnitManager
 {
-  // Running total of the power.
-  double totalPower;
+
   // The last clock that was synchronized
   unsigned long long globalClock;
 
@@ -63,6 +80,7 @@ struct FunctionalUnitManager
   void synchronize(const unsigned long long &now);
   void synchronize(const unsigned long &unitNumber, const unsigned long long &now);
 
+	double getTotalPower();
   // IO
   // Read an input (usually from fu.txt, and create the functional unit vector.
   int readFunctionalUnitFile(const char * filename);
