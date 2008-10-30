@@ -5,6 +5,7 @@
 #define DEBUG_TYPE "x86-ahmad-power"
 #include "X86.h"
 #include "X86InstrInfo.h"
+#include "llvm/Analysis/ProfileInfo.h"
 #include "llvm/CodeGen/MachineFunctionPass.h"
 #include "llvm/CodeGen/MachineInstrBuilder.h"
 #include "llvm/CodeGen/MachineRegisterInfo.h"
@@ -30,11 +31,31 @@ namespace {
     PowerOpt() : MachineFunctionPass((intptr_t)&ID) {}
 
     virtual bool runOnMachineFunction(MachineFunction &MF);
+    void generateTrace(MachineFunction &MF, std::vector<MachineBasicBlock*> &trace);
+    void addMachineBasicBlock(std::vector<MachineBasicBlock*> &trace, MachineBasicBlock *current);
+
+    // ahmad added
+    virtual void getAnalysisUsage(AnalysisUsage &AU) const {
+      AU.setPreservesCFG();
+      AU.addRequired<ProfileInfo>();
+      //AU.addPreserved<ProfileInfo>();  // Does this work?
+    }
+
+    // for debug
+    void printTrace(std::vector<MachineBasicBlock*> & trace)
+    {
+      printf("Printing trace. Size: %d\n", trace.size());
+      for( unsigned int i=0 ; i<trace.size() ; i++ )
+      {
+        printf("[%d]: %p\n", i, trace[i]);
+      }
+    }
 
     virtual const char *getPassName() const { return "X86 FP Stackifier"; }
 
   private:
     const TargetInstrInfo *TII; // Machine instruction info.
+    ProfileInfo *PI;
     MachineBasicBlock *MBB;     // Current basic block
     unsigned Stack[8];          // FP<n> Registers in each stack slot...
     unsigned RegMap[8];         // Track which stack slot contains each register
@@ -105,7 +126,7 @@ namespace {
     {
       // This function inserts a "magic" instruction before the iterator.
       //MachineInstr * MI = BuildMI(*MBB, I, TII->get(X86::XCHG32rm));
-      pdebug("Inserting power gating instruction\n");
+///      pdebug("Inserting power gating instruction\n");
 ///      MachineInstr * MI = BuildMI(*(I->getParent()), I, TII->get(X86::XCHG32rm));
 #define endl "\n"
 ///      MachineInstr * MI = BuildMI(*(I->getParent()), I, TII->get(X86::ADD32rr));
@@ -167,6 +188,44 @@ static unsigned getFPReg(const MachineOperand &MO) {
   return Reg - X86::FP0;
 }
 
+// Ahmad added: Generates a trace given a MachineFunction
+void PowerOpt::generateTrace(MachineFunction &MF, std::vector<MachineBasicBlock*> &trace)
+{
+  // Steps to obtain a hot-path trace.
+  // 1. Determine the entry point. 
+  // 2. For this MBB, get a list of all successors, and figure out which one is the
+  // likliest. There can only be one successor if both reside in the same BB.
+  // 3. Select the one that is most likley and go to step 3.
+
+  // Determine the entry point.
+  MachineBasicBlock * MBB;
+///  MBB=&(MF.front());
+///  MBB=MF.getEntryNode();
+  MBB=GraphTraits<MachineFunction*>::getEntryNode(&MF);
+  addMachineBasicBlock(trace, MBB);
+  printTrace(trace);
+}
+
+void PowerOpt::addMachineBasicBlock(std::vector<MachineBasicBlock*> &trace, MachineBasicBlock *current)
+{
+  // Get a list of all successors. If there is only one successor, we just add it to 
+  // the trace and move on. 
+  if(current->succ_size()==0)
+  {
+    // we are done. 
+    return;
+  }
+
+  for( MachineBasicBlock::succ_iterator it=current->succ_begin() ; it!=current->succ_end() ; it++ )
+  {
+    MachineBasicBlock * next=*it;
+    BasicBlock * currentBB=(BasicBlock*)current->getBasicBlock();
+    BasicBlock * nextBB=(BasicBlock*)next->getBasicBlock();
+    // Read all the profile information.
+    printf("MBB: %p (%p) to MBB: %p (%p): %d\n", current, current->getBasicBlock(), next, next->getBasicBlock(), PI->getEdgeWeight(currentBB, nextBB));
+  }
+}
+
 
 /// runOnMachineFunction - Loop over all of the basic blocks, transforming FP
 /// register references into FP stack references.
@@ -176,11 +235,17 @@ bool PowerOpt::runOnMachineFunction(MachineFunction &MF) {
   // Ahmad's code starts here... Iterate over all basic blocks. Figure out
   // the power requirements of each basic block. Then insert a magic instruction
   // at the start of every basic block.
+  std::vector<MachineBasicBlock*> trace;
   TII = MF.getTarget().getInstrInfo();
+  PI = &getAnalysis<ProfileInfo>();
+
+  generateTrace(MF, trace);
   for( MachineFunction::iterator mfi=MF.begin() ; mfi!=MF.end() ; mfi++ )
   {
     // We want to add a magic instruction to the start of MBB.
     MachineBasicBlock * MBB = mfi;
+    printf("MBB: %p corresponds to BB: %p\n", MBB, MBB->getBasicBlock());
+    
     insertGatingInstruction(0, MBB->begin());
   }
   
