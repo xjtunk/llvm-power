@@ -1,6 +1,8 @@
 #ifndef  __POWERGATING_H__
 #define  __POWERGATING_H__
 
+// Ahmad
+
 // Some llvm-power related global declarations, enumerations, etc.
 
 namespace llvm 
