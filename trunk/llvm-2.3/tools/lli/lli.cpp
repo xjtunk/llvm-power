@@ -60,10 +60,11 @@ namespace {
   DisableCoreFiles("disable-core-files", cl::Hidden,
                    cl::desc("Disable emission of core files if possible"));
 
+  // ahmad changed this from false to true by default.
   cl::opt<bool>
   NoLazyCompilation("no-lazy",
                   cl::desc("Disable JIT lazy compilation"),
-                  cl::init(false));
+                  cl::init(true));
 }
 
 static ExecutionEngine *EE = 0;
@@ -126,10 +127,10 @@ int main(int argc, char **argv, char * const *envp) {
     EE->DisableLazyCompilation();
 
   // ahmad
-
 ///  PM.add(new TargetData(*Mod);
 ///  PM.add(new PrintModulePass());
   PM.add(createEdgeProfilerPass());
+  PM.run(*Mod);
 
 
   // If the user specifically requested an argv[0] to pass into the program,
@@ -176,7 +177,6 @@ int main(int argc, char **argv, char * const *envp) {
     }
   }
 
-  PM.run(*Mod);
   // Run main.
   int Result = EE->runFunctionAsMain(MainFn, InputArgv, envp);
 
