@@ -221,6 +221,12 @@ void PowerOpt::addMachineBasicBlock(std::vector<MachineBasicBlock*> &trace, Mach
 {
   // Get a list of all successors. If there is only one successor, we just add it to 
   // the trace and move on. 
+  unsigned highestWeight=0;
+  MachineBasicBlock * highestMBB=NULL;
+
+  assert(current!=NULL);
+  trace.push_back(current);
+
   if(current->succ_size()==0)
   {
     // we are done. 
@@ -229,12 +235,23 @@ void PowerOpt::addMachineBasicBlock(std::vector<MachineBasicBlock*> &trace, Mach
 
   for( MachineBasicBlock::succ_iterator it=current->succ_begin() ; it!=current->succ_end() ; it++ )
   {
+    unsigned weight;
     MachineBasicBlock * next=*it;
     BasicBlock * currentBB=(BasicBlock*)current->getBasicBlock();
     BasicBlock * nextBB=(BasicBlock*)next->getBasicBlock();
+    assert(currentBB!=nextBB);
+    weight=PI->getEdgeWeight(currentBB, nextBB);
+    // Make sure trace is acyclic.
+    if(weight>=highestWeight && std::find(trace.begin(), trace.end(), next)==trace.end())
+    {
+      highestMBB=next;
+      highestWeight=weight;
+    }
     // Read all the profile information.
     printf("MBB: %p (%p) to MBB: %p (%p): %d\n", current, current->getBasicBlock(), next, next->getBasicBlock(), PI->getEdgeWeight(currentBB, nextBB));
   }
+
+  addMachineBasicBlock(trace, highestMBB);
 }
 
 
@@ -269,7 +286,8 @@ bool PowerOpt::runOnMachineFunction(MachineFunction &MF) {
   }
   
 
-///  generateTrace(MF, trace);
+  generateTrace(MF, trace);
+#if 0
   for( MachineFunction::iterator mfi=MF.begin() ; mfi!=MF.end() ; mfi++ )
   {
     // We want to add a magic instruction to the start of MBB.
@@ -279,6 +297,7 @@ bool PowerOpt::runOnMachineFunction(MachineFunction &MF) {
     
     insertGatingInstruction(0, MBB->begin());
   }
+#endif
   
   return true;
 
