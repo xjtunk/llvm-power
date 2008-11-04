@@ -54,7 +54,7 @@ namespace {
       printf("Printing trace. Size: %d\n", trace.size());
       for( unsigned int i=0 ; i<trace.size() ; i++ )
       {
-        printf("[%d]: %p\n", i, trace[i]);
+        printf("[%d]: %p: %s executed: %d\n", i, trace[i], trace[i]->getBasicBlock()->getName().c_str(), PI->getExecutionCount((BasicBlock*)trace[i]->getBasicBlock()));
       }
     }
 
@@ -200,6 +200,10 @@ static unsigned getFPReg(const MachineOperand &MO) {
 }
 
 // Ahmad added: Generates a trace given a MachineFunction
+// Ideally, we should generate x number of traces for the MachineFunction, where x=
+// 1, if there are no loops in the function or if the loops are never executed.
+// N for N inner-most loops of the function.
+// Any other ideas???
 void PowerOpt::generateTrace(MachineFunction &MF, std::vector<MachineBasicBlock*> &trace)
 {
   // Steps to obtain a hot-path trace.
@@ -217,6 +221,7 @@ void PowerOpt::generateTrace(MachineFunction &MF, std::vector<MachineBasicBlock*
   printTrace(trace);
 }
 
+// This function is working fine.
 void PowerOpt::addMachineBasicBlock(std::vector<MachineBasicBlock*> &trace, MachineBasicBlock *current)
 {
   // Get a list of all successors. If there is only one successor, we just add it to 
@@ -248,8 +253,11 @@ void PowerOpt::addMachineBasicBlock(std::vector<MachineBasicBlock*> &trace, Mach
       highestWeight=weight;
     }
     // Read all the profile information.
-    printf("MBB: %p (%p) to MBB: %p (%p): %d\n", current, current->getBasicBlock(), next, next->getBasicBlock(), PI->getEdgeWeight(currentBB, nextBB));
+    printf("MBB: %p (%p: %s) to MBB: %p (%p: %s): %d\n", current, currentBB, currentBB->getName().c_str(), next, nextBB, nextBB->getName().c_str(), PI->getEdgeWeight(currentBB, nextBB));
   }
+
+  if(highestMBB==NULL)
+    return;
 
   addMachineBasicBlock(trace, highestMBB);
 }
@@ -285,7 +293,6 @@ bool PowerOpt::runOnMachineFunction(MachineFunction &MF) {
     printf("PowerPass: BB: %p has freq: %d\n", (void*)BB, PI->getExecutionCount(BB));
   }
   
-
   generateTrace(MF, trace);
 #if 0
   for( MachineFunction::iterator mfi=MF.begin() ; mfi!=MF.end() ; mfi++ )
