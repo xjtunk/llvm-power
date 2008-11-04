@@ -33,6 +33,8 @@
 // ahmad added
 #include "llvm/Assembly/PrintModulePass.h"
 #include "llvm/Transforms/Instrumentation.h"
+#include "llvm/Analysis/ProfileInfoLoader.h"
+#include  "llvm/Analysis/Passes.h"
 
 using namespace llvm;
 
@@ -100,12 +102,15 @@ JIT::JIT(ModuleProvider *MP, TargetMachine &tm, TargetJITInfo &tji,
   // Add target data
   MutexGuard locked(lock);
   FunctionPassManager &PM = jitstate.getPM(locked);
-  // ahmad added
   PM.add(new TargetData(*TM.getTargetData()));
 
+  // ahmad added
 ///  PM.add(new PrintFunctionPass());
 ///  PM.add(new PrintModulePass());
 ///  PM.add(createEdgeProfilerPass());
+  // cannot add profile pass here, because this is a function level pass 
+  // manager, not a module level. :(
+///  PM.add(createProfileLoaderPass());
 
   // Turn the machine code intermediate representation into bytes in memory that
   // may be executed.
@@ -293,6 +298,26 @@ void JIT::runJITOnFunction(Function *F) {
 
   // JIT the function
   isAlreadyCodeGenerating = true;
+  // ahmad
+  Module * M=F->getParent();;
+  printf("JIT'ing function: %s\n", F->getName().c_str() );
+  // Try to load profile data, if we have it.
+  if(0)
+  {
+    // Is the profile already loaded?
+    if(ProfileLoaded.find(M)==ProfileLoaded.end()||ProfileLoaded[M]==false)
+    {
+      // Load the profile data.
+      ModulePass * MP;
+      PassManager PM;
+      MP=createProfileLoaderPass();
+      PM.add(MP);
+      printf("Loading profile data...\n");
+      PM.run(*M);
+      ProfileLoaded[M]=true;
+    }
+  }
+
   jitstate.getPM(locked).run(*F);
   isAlreadyCodeGenerating = false;
 

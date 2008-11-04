@@ -35,6 +35,8 @@
 #include  "llvm/PassManager.h"
 #include "llvm/Target/TargetData.h"
 #include "llvm/Transforms/Instrumentation.h"
+#include  "llvm/Analysis/Passes.h"
+#include  "llvm/Transforms/Scalar.h"
 
 using namespace llvm;
 
@@ -129,8 +131,21 @@ int main(int argc, char **argv, char * const *envp) {
   // ahmad
 ///  PM.add(new TargetData(*Mod);
 ///  PM.add(new PrintModulePass());
-  PM.add(createEdgeProfilerPass());
-  PM.run(*Mod);
+  // See if llvmprof.out exists.
+  if(0==access("llvmprof.out", R_OK))
+  {
+    printf("Profile data already exists!\n");
+///    PM.add(new TargetData(Mod));
+    PM.add(createProfileLoaderPass());
+///    PM.add(createBlockPlacementPass());
+    PM.run(*Mod);
+  }
+  else
+  {
+    printf("Creating profile data\n");
+    PM.add(createEdgeProfilerPass());
+    PM.run(*Mod);
+  }
 
 
   // If the user specifically requested an argv[0] to pass into the program,

@@ -22,6 +22,13 @@
 #include <set>
 using namespace llvm;
 
+// ahmad added
+#include  "llvm/Function.h"
+#include "llvm/Analysis/ProfileInfoLoader.h"
+#include  "llvm/PassManager.h"
+#include  "llvm/Analysis/Passes.h"
+#include  "llvm/Analysis/MyProfileInfo.h"
+
 STATISTIC(NumFXCH, "Number of fxch instructions inserted");
 STATISTIC(NumFP  , "Number of floating point instructions");
 
@@ -51,11 +58,15 @@ namespace {
       }
     }
 
-    virtual const char *getPassName() const { return "X86 FP Stackifier"; }
+    virtual const char *getPassName() const { return "X86 Power Optimization Pass"; }
 
   private:
-    const TargetInstrInfo *TII; // Machine instruction info.
+    // Ahmad added
     ProfileInfo *PI;
+    class LoaderPass;
+    std::map<Module*, MyProfileInfo*> Profiles;
+
+    const TargetInstrInfo *TII; // Machine instruction info.
     MachineBasicBlock *MBB;     // Current basic block
     unsigned Stack[8];          // FP<n> Registers in each stack slot...
     unsigned RegMap[8];         // Track which stack slot contains each register
@@ -237,14 +248,34 @@ bool PowerOpt::runOnMachineFunction(MachineFunction &MF) {
   // at the start of every basic block.
   std::vector<MachineBasicBlock*> trace;
   TII = MF.getTarget().getInstrInfo();
-  PI = &getAnalysis<ProfileInfo>();
 
-  generateTrace(MF, trace);
+  Function * F=(Function*) MF.getFunction();
+  Module * M=F->getParent();
+
+  // Try to see if we have the profile information available.
+  if(Profiles.find(M)==Profiles.end())
+  {
+    MyProfileInfo * MPI;
+    MPI=new MyProfileInfo();
+    MPI->runOnModule(*M);
+    Profiles[M]=MPI;
+    PI=MPI;
+  }
+
+  for( Function::iterator it=F->begin() ; it!=F->end() ; it++ )
+  {
+    BasicBlock * BB=&(*it);
+    printf("PowerPass: BB: %p has freq: %d\n", (void*)BB, PI->getExecutionCount(BB));
+  }
+  
+
+///  generateTrace(MF, trace);
   for( MachineFunction::iterator mfi=MF.begin() ; mfi!=MF.end() ; mfi++ )
   {
     // We want to add a magic instruction to the start of MBB.
     MachineBasicBlock * MBB = mfi;
-    printf("MBB: %p corresponds to BB: %p\n", MBB, MBB->getBasicBlock());
+    BasicBlock * BB=(BasicBlock*) MBB->getBasicBlock();
+    printf("MBB: %p corresponds to BB: %p with freq: %d\n", MBB, BB, PI->getExecutionCount(BB));
     
     insertGatingInstruction(0, MBB->begin());
   }
