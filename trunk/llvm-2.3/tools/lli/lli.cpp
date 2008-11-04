@@ -136,9 +136,9 @@ int main(int argc, char **argv, char * const *envp) {
   {
     printf("Profile data already exists!\n");
 ///    PM.add(new TargetData(Mod));
-    PM.add(createProfileLoaderPass());
+///    PM.add(createProfileLoaderPass());
 ///    PM.add(createBlockPlacementPass());
-    PM.run(*Mod);
+///    PM.run(*Mod);
   }
   else
   {

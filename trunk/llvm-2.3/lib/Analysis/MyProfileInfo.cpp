@@ -22,6 +22,12 @@ MyProfileInfo::MyProfileInfo(const std::string &filename)
 }
 
 bool MyProfileInfo::runOnModule(Module &M) {
+  if(0!=access(Filename.c_str(), R_OK))
+  {
+    printf("WARNING: MyProfileInfo cannot load profile from file: %s\n", Filename.c_str());
+    return false;
+  }
+
   ProfileInfoLoader PIL("profile-loader", Filename, M);
   EdgeCounts.clear();
   bool PrintedWarning = false;
