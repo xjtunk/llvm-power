@@ -28,6 +28,7 @@ using namespace llvm;
 #include  "llvm/PassManager.h"
 #include  "llvm/Analysis/Passes.h"
 #include  "llvm/Analysis/MyProfileInfo.h"
+#include "llvm/CodeGen/MachineLoopInfo.h"
 
 STATISTIC(NumFXCH, "Number of fxch instructions inserted");
 STATISTIC(NumFP  , "Number of floating point instructions");
@@ -45,6 +46,10 @@ namespace {
     virtual void getAnalysisUsage(AnalysisUsage &AU) const {
       AU.setPreservesCFG();
       AU.addRequired<ProfileInfo>();
+      
+      // added for loop info
+      AU.addPreserved<MachineLoopInfo>();
+      AU.addRequired<MachineLoopInfo>();
       //AU.addPreserved<ProfileInfo>();  // Does this work?
     }
 
@@ -65,6 +70,7 @@ namespace {
     ProfileInfo *PI;
     class LoaderPass;
     std::map<Module*, MyProfileInfo*> Profiles;
+    MachineLoopInfo      *LI;   // Current MachineLoopInfo
 
     const TargetInstrInfo *TII; // Machine instruction info.
     MachineBasicBlock *MBB;     // Current basic block
@@ -286,6 +292,26 @@ bool PowerOpt::runOnMachineFunction(MachineFunction &MF) {
     Profiles[M]=MPI;
     PI=MPI;
   }
+
+  LI = &getAnalysis<MachineLoopInfo>();
+  for (MachineLoopInfo::iterator
+         I = LI->begin(), E = LI->end(); I != E; ++I) {
+    MachineLoop * CurLoop = *I;
+
+    // Visit all of the instructions of the loop. We want to visit the subloops
+    // first, though, so that we can hoist their invariants first into their
+    // containing loop before we process that loop.
+///    VisitAllLoops(CurLoop);
+///    CurLoop->print(cout);
+    for( MachineLoop::block_iterator it=CurLoop->block_begin() ; it!=CurLoop->block_end() ; it++ )
+    {
+///      printf("%s\n", (*it)->getBasicBlock()->getName());
+      MachineBasicBlock * MBB;
+      MBB=(*it);
+      printf("MBB: %p is: %s\n", MBB, MBB->getBasicBlock()->getName().c_str());
+    }
+  }
+
 
   for( Function::iterator it=F->begin() ; it!=F->end() ; it++ )
   {
