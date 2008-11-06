@@ -305,6 +305,7 @@ void JIT::runJITOnFunction(Function *F) {
   if(0)
   {
     // Is the profile already loaded?
+#if 0
     if(ProfileLoaded.find(M)==ProfileLoaded.end()||ProfileLoaded[M]==false)
     {
       // Load the profile data.
@@ -316,6 +317,7 @@ void JIT::runJITOnFunction(Function *F) {
       PM.run(*M);
       ProfileLoaded[M]=true;
     }
+#endif
   }
 
   jitstate.getPM(locked).run(*F);
