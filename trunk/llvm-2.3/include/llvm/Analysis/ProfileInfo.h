@@ -58,7 +58,7 @@ namespace llvm {
       printf("Dumping profile information: %d\n", EdgeCounts.size());
       for( std::map<std::pair<BasicBlock*, BasicBlock*>, unsigned>::const_iterator it=EdgeCounts.begin() ; it!=EdgeCounts.end() ; it++ )
       {
-        printf("BB: %p to BB: %p: %d\n", it->first.first, it->first.second, it->second);
+        printf("BB: %p to BB: %p: %d\n", (void*)it->first.first, (void*)it->first.second, it->second);
       }
     }
 
