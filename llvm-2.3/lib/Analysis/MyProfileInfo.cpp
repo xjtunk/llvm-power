@@ -49,7 +49,8 @@ bool MyProfileInfo::runOnModule(Module &M) {
     }
   }
 
-  printProfile();
+  // Ahmad commented this.
+///  printProfile();
 
   return false;
 }

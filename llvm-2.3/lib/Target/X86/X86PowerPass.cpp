@@ -54,12 +54,44 @@ namespace {
     }
 
     // for debug
-    void printTrace(std::vector<MachineBasicBlock*> & trace)
+    void printTrace(std::vector<MachineBasicBlock*> & trace) const
     {
       printf("Printing trace. Size: %d\n", trace.size());
       for( unsigned int i=0 ; i<trace.size() ; i++ )
       {
-        printf("[%d]: %p: %s executed: %d\n", i, trace[i], trace[i]->getBasicBlock()->getName().c_str(), PI->getExecutionCount((BasicBlock*)trace[i]->getBasicBlock()));
+        printf("[%d]: %p: %s executed: %d\n", i, (void*)trace[i], trace[i]->getBasicBlock()->getName().c_str(), PI->getExecutionCount((BasicBlock*)trace[i]->getBasicBlock()));
+      }
+    }
+
+    void printMachineLoop(MachineLoop * ml) const
+    {
+      int loopSize=ml->block_end()-ml->block_begin();
+      int nestSize=ml->end()-ml->begin();
+      printf("Printing machine loop. Has: %d MBBs and %d top-level nested loops\n", loopSize, nestSize);
+      for( MachineLoop::block_iterator it=ml->block_begin() ; it!=ml->block_end() ; it++ )
+      {
+        MachineBasicBlock * MBB=*it;
+        printf("MachineBasicBlock: %p BB: %s\n", (void*)MBB, MBB->getBasicBlock()->getName().c_str());
+      }
+    }
+
+    void generateTraces(MachineLoop * ml)
+    {
+      int nestSize=ml->end()-ml->begin();
+      if(nestSize==0)
+      {
+        std::vector<MachineBasicBlock*> trace;
+        printf("Found inner-most loop\n");
+        addMachineBasicBlock(trace, ml->getHeader());
+        printTrace(trace);
+///        printMachineLoop(ml);
+      }
+      else
+      {
+        for( MachineLoop::iterator it=ml->begin() ; it!=ml->end() ; it++ )
+        {
+          generateTraces(*it);
+        }
       }
     }
 
@@ -259,7 +291,7 @@ void PowerOpt::addMachineBasicBlock(std::vector<MachineBasicBlock*> &trace, Mach
       highestWeight=weight;
     }
     // Read all the profile information.
-    printf("MBB: %p (%p: %s) to MBB: %p (%p: %s): %d\n", current, currentBB, currentBB->getName().c_str(), next, nextBB, nextBB->getName().c_str(), PI->getEdgeWeight(currentBB, nextBB));
+///    printf("MBB: %p (%p: %s) to MBB: %p (%p: %s): %d\n", (void*)current, (void*)currentBB, currentBB->getName().c_str(), (void*)next, (void*)nextBB, nextBB->getName().c_str(), PI->getEdgeWeight(currentBB, nextBB));
   }
 
   if(highestMBB==NULL)
@@ -277,6 +309,7 @@ bool PowerOpt::runOnMachineFunction(MachineFunction &MF) {
   // Ahmad's code starts here... Iterate over all basic blocks. Figure out
   // the power requirements of each basic block. Then insert a magic instruction
   // at the start of every basic block.
+  int loopSize;
   std::vector<MachineBasicBlock*> trace;
   TII = MF.getTarget().getInstrInfo();
 
@@ -303,23 +336,21 @@ bool PowerOpt::runOnMachineFunction(MachineFunction &MF) {
     // containing loop before we process that loop.
 ///    VisitAllLoops(CurLoop);
 ///    CurLoop->print(cout);
-    for( MachineLoop::block_iterator it=CurLoop->block_begin() ; it!=CurLoop->block_end() ; it++ )
-    {
-///      printf("%s\n", (*it)->getBasicBlock()->getName());
-      MachineBasicBlock * MBB;
-      MBB=(*it);
-      printf("MBB: %p is: %s\n", MBB, MBB->getBasicBlock()->getName().c_str());
-    }
+///    printMachineLoop(CurLoop);
+    generateTraces(CurLoop);
+    loopSize++;
   }
 
 
-  for( Function::iterator it=F->begin() ; it!=F->end() ; it++ )
-  {
-    BasicBlock * BB=&(*it);
-    printf("PowerPass: BB: %p has freq: %d\n", (void*)BB, PI->getExecutionCount(BB));
-  }
+///  for( Function::iterator it=F->begin() ; it!=F->end() ; it++ )
+///  {
+///    BasicBlock * BB=&(*it);
+///    printf("PowerPass: BB: %p has freq: %d\n", (void*)BB, PI->getExecutionCount(BB));
+///  }
   
-  generateTrace(MF, trace);
+  // Only generate acyclic trace when there are no loops.
+  if(loopSize==0)
+    generateTrace(MF, trace);
 #if 0
   for( MachineFunction::iterator mfi=MF.begin() ; mfi!=MF.end() ; mfi++ )
   {
