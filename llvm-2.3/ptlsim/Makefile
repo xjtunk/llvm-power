@@ -214,7 +214,7 @@ test.dat-32bit.S: test.dat Makefile
 	$(CC) $(CFLAGS) $(INCFLAGS) -c $<
 
 clean:
-	rm -fv ptlsim ptlstats ptlctl ptlxen.bin ptlxen.bin.debug usage.txt cpuid ptlsim.dst dstbuild.temp dstbuild.temp.cpp stats.i makeusage *.o core core.[0-9]* .depend *.gch
+	rm -fv ptlsim ptlstats ptlctl ptlxen.bin ptlxen.bin.debug usage.txt cpuid ptlsim.dst dstbuild.temp dstbuild.temp.cpp stats.i makeusage *.o core core.[0-9]* .depend *.gch main
 
 OBJFILES = $(COMMONOBJS) $(PT2XOBJS) $(OOOOBJS)
 INCLUDEFILES = $(COMMONINCLUDES) $(PT2XINCLUDES) $(OOOINCLUDES)
