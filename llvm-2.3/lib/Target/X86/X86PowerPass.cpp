@@ -264,6 +264,7 @@ void PowerOpt::addMachineBasicBlock(std::vector<MachineBasicBlock*> &trace, Mach
 {
   // Get a list of all successors. If there is only one successor, we just add it to 
   // the trace and move on. 
+///  printf("%s called with: %s\n", __FUNCTION__, current->getBasicBlock()->getName().c_str());
   unsigned highestWeight=0;
   MachineBasicBlock * highestMBB=NULL;
 
@@ -276,12 +277,28 @@ void PowerOpt::addMachineBasicBlock(std::vector<MachineBasicBlock*> &trace, Mach
     return;
   }
 
+#if 0
+  int i=0;
+  for( MachineBasicBlock::succ_iterator it=current->succ_begin() ; i++, it!=current->succ_end() ; it++ )
+  {
+    MachineBasicBlock * next=*it;
+    BasicBlock * nextBB= const_cast<BasicBlock*> (next->getBasicBlock());
+///    printf("Successor[%]: %s\n", i, nextBB->getName().c_str());
+    cout << "successor["<<i<<"]: "<<nextBB->getName()<<std::endl;
+  }
+#endif
+
   for( MachineBasicBlock::succ_iterator it=current->succ_begin() ; it!=current->succ_end() ; it++ )
   {
     unsigned weight;
     MachineBasicBlock * next=*it;
     BasicBlock * currentBB=(BasicBlock*)current->getBasicBlock();
     BasicBlock * nextBB=(BasicBlock*)next->getBasicBlock();
+    if(currentBB==nextBB)
+    {
+      printf("WARNING: currentBB==nextBB. Tight loop?\n");
+      return;
+    }
     assert(currentBB!=nextBB);
     weight=PI->getEdgeWeight(currentBB, nextBB);
     // Make sure trace is acyclic.
