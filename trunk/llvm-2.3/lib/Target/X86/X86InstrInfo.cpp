@@ -712,9 +712,7 @@ gatingmask_t X86InstrInfo::getGatingMask(const MachineInstr *MI) const
 {
   switch (MI->getOpcode())
   {
-    default: 
-      return ((gatingmask_t)0-1);
-      break;
+    #include "PowerGatingLib.h"
   }
   return 0;
 }
