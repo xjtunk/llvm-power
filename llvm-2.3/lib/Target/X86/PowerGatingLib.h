@@ -1,6 +1,7 @@
 
 #define RETURN_ON      return (gatingmask_t)1 << 
 #define RETURN_ON_ALL  return (gatingmask_t)0 - 1
+#define RETURN_ON_NONE return (gatingmask_t)0
 
 	case X86::PHI:
 	case X86::INLINEASM:
@@ -191,6 +192,9 @@
 	case X86::CHS_Fp64:
 	case X86::CHS_Fp80:
 	case X86::CLFLUSH:
+		RETURN_ON_ALL;
+		break;
+
 	case X86::CMOVA16rm:
 	case X86::CMOVA16rr:
 	case X86::CMOVA32rm:
@@ -312,7 +316,7 @@
 	case X86::CMOV_V2F64:
 	case X86::CMOV_V2I64:
 	case X86::CMOV_V4F32:
-		RETURN_ON_ALL;
+		RETURN_ON FUT_MOVER;
 		break;
 
 	case X86::CMP16mi:
@@ -1086,7 +1090,7 @@
 	case X86::MOV_Fp8032:
 	case X86::MOV_Fp8064:
 	case X86::MOV_Fp8080:
-		RETURN_ON_ALL;
+		RETURN_ON FUT_MOVER;
 		break;
 
 	case X86::MPSADBWrmi:
@@ -1590,6 +1594,9 @@
 	case X86::SBB64rm:
 	case X86::SBB64rr:
 	case X86::SBB8mi:
+		RETURN_ON_ALL;
+		break;
+
 	case X86::SETAEm:
 	case X86::SETAEr:
 	case X86::SETAm:
@@ -1618,6 +1625,9 @@
 	case X86::SETPr:
 	case X86::SETSm:
 	case X86::SETSr:
+		RETURN_ON FUT_SET;
+		break;
+
 	case X86::SFENCE:
 	case X86::SHL16m1:
 	case X86::SHL16mCL:
@@ -1824,6 +1834,9 @@
 	case X86::TCRETURNdi64:
 	case X86::TCRETURNri:
 	case X86::TCRETURNri64:
+		RETURN_ON_ALL;
+		break;
+
 	case X86::TEST16mi:
 	case X86::TEST16ri:
 	case X86::TEST16rm:
@@ -1840,6 +1853,9 @@
 	case X86::TEST8ri:
 	case X86::TEST8rm:
 	case X86::TEST8rr:
+		RETURN_ON FUT_LOGIC;
+		break;
+
 	case X86::TLS_addr32:
 	case X86::TLS_addr64:
 	case X86::TLS_gs_ri:
@@ -1880,6 +1896,9 @@
 	case X86::XCHG64rm:
 	case X86::XCHG8rm:
 	case X86::XCH_F:
+		RETURN_ON_ALL;
+		break;
+
 	case X86::XOR16mi:
 	case X86::XOR16mi8:
 	case X86::XOR16mr:
@@ -1910,7 +1929,11 @@
 	case X86::XORPDrr:
 	case X86::XORPSrm:
 	case X86::XORPSrr:
+		RETURN_ON FUT_INT_ADDER;
+		break;
+
 	case X86::INSTRUCTION_LIST_END:
 	default:
 		RETURN_ON_ALL;
 		break;
+
