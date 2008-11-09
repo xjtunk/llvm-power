@@ -9,7 +9,7 @@ namespace llvm
 {
   enum FunctionUnitType
   {
-    FUT_INT_ADDER,
+    FUT_INT_ADDER = 1,
     FUT_INT_SHIFTER,
     FUT_INT_MULTIPLIER,
     FUT_INT_AGU, // Address generation unit. Might be merged with adder
