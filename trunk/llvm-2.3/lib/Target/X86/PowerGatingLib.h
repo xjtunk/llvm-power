@@ -15,6 +15,9 @@
 	case X86::ABS_Fp32:
 	case X86::ABS_Fp64:
 	case X86::ABS_Fp80:
+		RETURN_ON_ALL;
+		break;
+
 	case X86::ADC32mi:
 	case X86::ADC32mi8:
 	case X86::ADC32mr:
@@ -29,9 +32,6 @@
 	case X86::ADC64ri8:
 	case X86::ADC64rm:
 	case X86::ADC64rr:
-		RETURN_ON_ALL;
-		break;
-
 	case X86::ADD16mi:
 	case X86::ADD16mi8:
 	case X86::ADD16mr:
