@@ -74,7 +74,7 @@
 	case X86::ADDSUBPDrr:
 	case X86::ADDSUBPSrm:
 	case X86::ADDSUBPSrr:
-		RETURN_ON FUT_INT_ADDER;
+		RETURN_ON FUT_INT_ADDER_ARITH;
 		break;
 
 	case X86::ADD_F32m:
@@ -140,7 +140,7 @@
 	case X86::ANDPDrr:
 	case X86::ANDPSrm:
 	case X86::ANDPSrr:
-		RETURN_ON FUT_INT_ADDER;
+		RETURN_ON FUT_INT_ADDER_LOGIC;
 		break;
 
 	case X86::ATOMAND32:
@@ -1803,7 +1803,7 @@
 	case X86::SUBSSrm_Int:
 	case X86::SUBSSrr:
 	case X86::SUBSSrr_Int:
-		RETURN_ON FUT_INT_ADDER;
+		RETURN_ON FUT_INT_ADDER_ARITH;
 		break;
 
 	case X86::SUB_F32m:
@@ -1929,7 +1929,7 @@
 	case X86::XORPDrr:
 	case X86::XORPSrm:
 	case X86::XORPSrr:
-		RETURN_ON FUT_INT_ADDER;
+		RETURN_ON FUT_INT_ADDER_LOGIC;
 		break;
 
 	case X86::INSTRUCTION_LIST_END:
