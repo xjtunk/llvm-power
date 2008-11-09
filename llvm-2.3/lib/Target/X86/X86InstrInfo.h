@@ -264,7 +264,7 @@ public:
   unsigned isStoreToStackSlot(MachineInstr *MI, int &FrameIndex) const;
 
   // Ahmad added function for obtaining mask for instruction.
-  gatingmask_t getGatingMask(const MachineInstr *MI) const;
+  static gatingmask_t getGatingMask(const MachineInstr *MI);
 
   bool isReallyTriviallyReMaterializable(MachineInstr *MI) const;
   void reMaterialize(MachineBasicBlock &MBB, MachineBasicBlock::iterator MI,

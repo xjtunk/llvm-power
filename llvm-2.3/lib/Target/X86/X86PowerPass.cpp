@@ -63,11 +63,30 @@ namespace {
       }
     }
 
+    void optimizeTrace(std::vector<MachineBasicBlock*> & trace)
+    {
+      gatingmask_t finalMask=0;
+      printf("Optimizing trace...\n");
+      for( unsigned int i=0 ; i<trace.size() ; i++ )
+      {
+        MachineBasicBlock *MBB=trace[i];
+        for( MachineBasicBlock::iterator it=MBB->begin() ; it!=MBB->end() ; it++ )
+        {
+          // Get the instruction's mask and OR it with the current mask.
+          MachineInstr &MI=*it;
+          gatingmask_t tempMask=X86InstrInfo::getGatingMask(&MI);
+          finalMask=tempMask|finalMask;
+        }
+      }
+      assert(~finalMask!=0 && "Mask is 0!\n");
+      printf("Done optimizing trace\n");
+    }
+
     void printMachineLoop(MachineLoop * ml) const
     {
-      int loopSize=ml->block_end()-ml->block_begin();
+      int numLoops=ml->block_end()-ml->block_begin();
       int nestSize=ml->end()-ml->begin();
-      printf("Printing machine loop. Has: %d MBBs and %d top-level nested loops\n", loopSize, nestSize);
+      printf("Printing machine loop. Has: %d MBBs and %d top-level nested loops\n", numLoops, nestSize);
       for( MachineLoop::block_iterator it=ml->block_begin() ; it!=ml->block_end() ; it++ )
       {
         MachineBasicBlock * MBB=*it;
@@ -85,6 +104,8 @@ namespace {
         addMachineBasicBlock(trace, ml->getHeader());
         printTrace(trace);
 ///        printMachineLoop(ml);
+        // Let's optimize the trace here...
+        optimizeTrace(trace);
       }
       else
       {
@@ -177,22 +198,23 @@ namespace {
       //MachineInstr * MI = BuildMI(*MBB, I, TII->get(X86::XCHG32rm));
 ///      pdebug("Inserting power gating instruction\n");
 ///      MachineInstr * MI = BuildMI(*(I->getParent()), I, TII->get(X86::XCHG32rm));
-#define endl "\n"
 ///      MachineInstr * MI = BuildMI(*(I->getParent()), I, TII->get(X86::ADD32rr));
 ///      MI->addOperand(MachineOperand::CreateReg(X86::EBX, true));
-///      cout << *MI << endl;
+///      cout << *MI << std::endl;
 ///      MI->addOperand(MachineOperand::CreateReg(X86::EBX, false));
-///      cout << *MI << endl;
+///      cout << *MI << std::endl;
 ///      MI->addOperand(MachineOperand::CreateReg(X86::EBX, false));
-///      cout << *MI << endl;
+///      cout << *MI << std::endl;
 ///      MI->addOperand(MachineOperand::CreateReg(X86::EBX, false));
-///      cout << *MI << endl;
+///      cout << *MI << std::endl;
 ///      MI->addOperand(MachineOperand::CreateReg(X86::EBX, false));
-///      cout << *MI << endl;
-      MachineInstr * MI = BuildMI(*(I->getParent()), I, TII->get(X86::AND32rr), X86::EBX);
-      MI->addOperand(MachineOperand::CreateReg(X86::EBX, false));
-      MI->addOperand(MachineOperand::CreateReg(X86::EBX, false));
-#undef endl
+///      cout << *MI << std::endl;
+
+///      MachineInstr * MI = BuildMI(*(I->getParent()), I, TII->get(X86::AND32rr), X86::EBX);
+///      MI->addOperand(MachineOperand::CreateReg(X86::EBX, false));
+///      MI->addOperand(MachineOperand::CreateReg(X86::EBX, false));
+
+      MachineInstr * MI = BuildMI(*(I->getParent()), I, TII->get(X86::GATE)).addImm(0x12345678);
     }
 
     void duplicateToTop(unsigned RegNo, unsigned AsReg, MachineInstr *I) {
@@ -257,6 +279,7 @@ void PowerOpt::generateTrace(MachineFunction &MF, std::vector<MachineBasicBlock*
   MBB=GraphTraits<MachineFunction*>::getEntryNode(&MF);
   addMachineBasicBlock(trace, MBB);
   printTrace(trace);
+  optimizeTrace(trace);
 }
 
 // This function is working fine.
@@ -326,7 +349,7 @@ bool PowerOpt::runOnMachineFunction(MachineFunction &MF) {
   // Ahmad's code starts here... Iterate over all basic blocks. Figure out
   // the power requirements of each basic block. Then insert a magic instruction
   // at the start of every basic block.
-  int loopSize;
+  int numLoops;
   std::vector<MachineBasicBlock*> trace;
   TII = MF.getTarget().getInstrInfo();
 
@@ -355,7 +378,7 @@ bool PowerOpt::runOnMachineFunction(MachineFunction &MF) {
 ///    CurLoop->print(cout);
 ///    printMachineLoop(CurLoop);
     generateTraces(CurLoop);
-    loopSize++;
+    numLoops++;
   }
 
 
@@ -366,9 +389,11 @@ bool PowerOpt::runOnMachineFunction(MachineFunction &MF) {
 ///  }
   
   // Only generate acyclic trace when there are no loops.
-  if(loopSize==0)
+  if(numLoops==0)
+  {
     generateTrace(MF, trace);
-#if 0
+  }
+#if 1
   for( MachineFunction::iterator mfi=MF.begin() ; mfi!=MF.end() ; mfi++ )
   {
     // We want to add a magic instruction to the start of MBB.

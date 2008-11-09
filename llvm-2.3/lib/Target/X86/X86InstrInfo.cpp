@@ -708,7 +708,7 @@ unsigned X86InstrInfo::isLoadFromStackSlot(MachineInstr *MI,
 }
 
 // Ahmad added. Given an instruction, return it's 64-bit mask.
-gatingmask_t X86InstrInfo::getGatingMask(const MachineInstr *MI) const
+gatingmask_t X86InstrInfo::getGatingMask(const MachineInstr *MI) 
 {
   switch (MI->getOpcode())
   {

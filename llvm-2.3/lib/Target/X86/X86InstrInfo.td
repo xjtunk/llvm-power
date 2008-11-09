@@ -404,6 +404,15 @@ let isCall = 1, isTerminator = 1, isReturn = 1, isBarrier = 1 in
 //===----------------------------------------------------------------------===//
 //  Miscellaneous Instructions...
 //
+
+// ahmad added this here.
+def GATE     : Ii32<0x37, RawFrm, (outs), (ins i32imm:$dst,variable_ops),
+                  "gate\t${dst:call}", []>, TB;
+
+// Following is our example instruction.
+///    def CALLpcrel32 : Ii32<0xE8, RawFrm, (outs), (ins i32imm:$dst,variable_ops),
+///                           "call\t${dst:call}", []>;
+ 
 let Defs = [EBP, ESP], Uses = [EBP, ESP], mayLoad = 1, neverHasSideEffects=1 in
 def LEAVE    : I<0xC9, RawFrm,
                  (outs), (ins), "leave", []>;
