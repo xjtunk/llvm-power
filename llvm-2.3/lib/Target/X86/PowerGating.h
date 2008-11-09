@@ -18,6 +18,7 @@ namespace llvm
 	FUT_MOVER,
 	FUT_SET,
 	FUT_LOGIC,
+	FUT_CMP,
     FUT_FP_ADDER,
     FUT_FP_MULTIPLIER,
     FUT_FP_MADD,

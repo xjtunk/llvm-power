@@ -353,7 +353,7 @@
 	case X86::CMPSDrr:
 	case X86::CMPSSrm:
 	case X86::CMPSSrr:
-		RETURN_ON_ALL;
+		RETURN_ON FUT_CMP;
 		break;
 
 	case X86::COS_F:
