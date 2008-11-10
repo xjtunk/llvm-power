@@ -65,6 +65,7 @@ namespace {
 
     void optimizeTrace(std::vector<MachineBasicBlock*> & trace)
     {
+      assert(trace.size()!=0);
       gatingmask_t finalMask=0;
       printf("Optimizing trace...\n");
       for( unsigned int i=0 ; i<trace.size() ; i++ )
@@ -75,10 +76,12 @@ namespace {
           // Get the instruction's mask and OR it with the current mask.
           MachineInstr &MI=*it;
           gatingmask_t tempMask=X86InstrInfo::getGatingMask(&MI);
+          cout << "Instruction: "<<MI<<"\treturned: "<<std::hex<<tempMask<<std::dec<<std::endl;
           finalMask=tempMask|finalMask;
         }
       }
-      assert(~finalMask!=0 && "Mask is 0!\n");
+///      assert(~finalMask!=0 && "Mask is 0!\n");
+      insertGatingInstruction(finalMask, trace[0]->begin());
       printf("Done optimizing trace\n");
     }
 
@@ -192,7 +195,7 @@ namespace {
     }
 
     // ahmad added.
-    void insertGatingInstruction(int bitvector, MachineBasicBlock::iterator I)
+    void insertGatingInstruction(gatingmask_t bitVector, MachineBasicBlock::iterator I)
     {
       // This function inserts a "magic" instruction before the iterator.
       //MachineInstr * MI = BuildMI(*MBB, I, TII->get(X86::XCHG32rm));
@@ -214,7 +217,7 @@ namespace {
 ///      MI->addOperand(MachineOperand::CreateReg(X86::EBX, false));
 ///      MI->addOperand(MachineOperand::CreateReg(X86::EBX, false));
 
-      MachineInstr * MI = BuildMI(*(I->getParent()), I, TII->get(X86::GATE)).addImm(0x12345678);
+      MachineInstr * MI = BuildMI(*(I->getParent()), I, TII->get(X86::GATE)).addImm(bitVector);
     }
 
     void duplicateToTop(unsigned RegNo, unsigned AsReg, MachineInstr *I) {
@@ -393,7 +396,7 @@ bool PowerOpt::runOnMachineFunction(MachineFunction &MF) {
   {
     generateTrace(MF, trace);
   }
-#if 1
+#if 0
   for( MachineFunction::iterator mfi=MF.begin() ; mfi!=MF.end() ; mfi++ )
   {
     // We want to add a magic instruction to the start of MBB.
