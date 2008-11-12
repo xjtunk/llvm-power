@@ -35,6 +35,8 @@ static void EdgeProfAtExitHandler() {
   write_profiling_data(EdgeInfo, ArrayStart, NumElements);
 }
 
+// Added by Brooks
+// Function to handle timer interrupts
 struct sigaction signalaction;
 void handleSIGALRM(int arg) {
   printf("Handling SIGALRM\n");
@@ -50,7 +52,10 @@ int llvm_start_edge_profiling(int argc, const char **argv,
   int Ret = save_arguments(argc, argv);
   ArrayStart = arrayStart;
   NumElements = numElements;
-  /* atexit(EdgeProfAtExitHandler); */
+  // Brooks
+  // Added signal handler for ALARM to do timer interrupts
+  // They trigger the edge profiler to run
+  //atexit(EdgeProfAtExitHandler);
   sigemptyset(&signalaction.sa_mask);
   signalaction.sa_flags = SA_RESTART;
   signalaction.sa_handler = &handleSIGALRM;
