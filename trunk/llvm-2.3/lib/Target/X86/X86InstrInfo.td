@@ -406,8 +406,8 @@ let isCall = 1, isTerminator = 1, isReturn = 1, isBarrier = 1 in
 //
 
 // ahmad added this here.
-def GATE     : Ii32<0x37, RawFrm, (outs), (ins i32imm:$dst,variable_ops),
-                  "gate\t${dst:call}", []>, TB;
+def GATE     : Ii64<0x37, RawFrm, (outs), (ins i64imm:$dst,variable_ops),
+                  "gate\t{*}$dst", []>, TB;
 
 // Following is our example instruction.
 ///    def CALLpcrel32 : Ii32<0xE8, RawFrm, (outs), (ins i32imm:$dst,variable_ops),

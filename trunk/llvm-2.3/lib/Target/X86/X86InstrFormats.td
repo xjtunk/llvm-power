@@ -128,11 +128,11 @@ class Ii32<bits<8> o, Format f, dag outs, dag ins, string asm, list<dag> pattern
 }
 
 // ahmad added this here.
-//class Ii64<bits<16> o, Format f, dag outs, dag ins, string asm, list<dag> pattern>
-  //: X86Inst<o, f, Imm64, outs, ins, asm> {
-  //let Pattern = pattern;
-  //let CodeSize = 3;
-//}
+class Ii64<bits<8> o, Format f, dag outs, dag ins, string asm, list<dag> pattern>
+  : X86Inst<o, f, Imm64, outs, ins, asm> {
+  let Pattern = pattern;
+  let CodeSize = 3;
+}
 
 // FPStack Instruction Templates:
 // FPI - Floating Point Instruction template.

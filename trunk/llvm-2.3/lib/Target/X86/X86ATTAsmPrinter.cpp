@@ -229,7 +229,8 @@ void X86ATTAsmPrinter::printOperand(const MachineInstr *MI, unsigned OpNo,
     if (!Modifier ||
         (strcmp(Modifier, "debug") && strcmp(Modifier, "mem")))
       O << '$';
-    O << MO.getImm();
+    // ahmad changed to hex
+    O <<"0x"<<std::hex<<MO.getImm()<<std::dec;
     return;
   case MachineOperand::MO_MachineBasicBlock:
     printBasicBlockLabel(MO.getMBB());
