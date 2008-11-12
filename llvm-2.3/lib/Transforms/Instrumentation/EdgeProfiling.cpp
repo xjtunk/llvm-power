@@ -68,6 +68,7 @@ bool EdgeProfiler::runOnModule(Module &M) {
     new GlobalVariable(ATy, false, GlobalValue::InternalLinkage,
                        Constant::getNullValue(ATy), "EdgeProfCounters", &M);
 
+  // TODO: ahmad, add bbs and instructions to the global map.
   // Instrument all of the edges...
   unsigned i = 0;
   for (Module::iterator F = M.begin(), E = M.end(); F != E; ++F)
