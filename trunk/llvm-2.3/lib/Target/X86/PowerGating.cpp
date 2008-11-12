@@ -1,5 +1,6 @@
-#include <cstdarg>
 #include "PowerGating.h"
+#include <cstdarg>
+
 namespace llvm {
 	// Added by Brooks
 	// This function returns the mask of functional units to turn on
@@ -27,3 +28,4 @@ namespace llvm {
 		}
 	}
 }
+

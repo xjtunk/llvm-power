@@ -10,7 +10,7 @@
 	case X86::ABS_Fp32:
 	case X86::ABS_Fp64:
 	case X86::ABS_Fp80:
-		turnOnFUT(FUT_ALL);
+		return turnOnFUT(FUT_ALL);
 		break;
 
 	case X86::ADC32mi:
@@ -69,7 +69,7 @@
 	case X86::ADDSUBPDrr:
 	case X86::ADDSUBPSrm:
 	case X86::ADDSUBPSrr:
-		turnOnFUT(1, FUT_INT_ADDER_ARITH);
+		return turnOnFUT(1, FUT_INT_ADDER_ARITH);
 		break;
 
 	case X86::ADD_F32m:
@@ -93,12 +93,12 @@
 	case X86::ADD_FpI32m64:
 	case X86::ADD_FpI32m80:
 	case X86::ADD_FrST0:
-		turnOnFUT(1, FUT_FP_ADDER);
+		return turnOnFUT(1, FUT_FP_ADDER);
 		break;
 
 	case X86::ADJCALLSTACKDOWN:
 	case X86::ADJCALLSTACKUP:
-		turnOnFUT(FUT_ALL);
+		return turnOnFUT(FUT_ALL);
 		break;
 
 	case X86::AND16mi:
@@ -135,7 +135,7 @@
 	case X86::ANDPDrr:
 	case X86::ANDPSrm:
 	case X86::ANDPSrr:
-		turnOnFUT(1, FUT_INT_ADDER_LOGIC);
+		return turnOnFUT(1, FUT_INT_ADDER_LOGIC);
 		break;
 
 	case X86::ATOMAND32:
@@ -167,7 +167,7 @@
 	case X86::BSR64rr:
 	case X86::BSWAP32r:
 	case X86::BSWAP64r:
-		turnOnFUT(FUT_ALL);
+		return turnOnFUT(FUT_ALL);
 		break;
 
 	case X86::CALL32m:
@@ -176,7 +176,7 @@
 	case X86::CALL64pcrel32:
 	case X86::CALL64r:
 	case X86::CALLpcrel32:
-		turnOnFUT(1, FUT_INT_AGU);
+		return turnOnFUT(1, FUT_INT_AGU);
 		break;
 
 	case X86::CBW:
@@ -187,7 +187,7 @@
 	case X86::CHS_Fp64:
 	case X86::CHS_Fp80:
 	case X86::CLFLUSH:
-		turnOnFUT(FUT_ALL);
+		return turnOnFUT(FUT_ALL);
 		break;
 
 	case X86::CMOVA16rm:
@@ -311,7 +311,7 @@
 	case X86::CMOV_V2F64:
 	case X86::CMOV_V2I64:
 	case X86::CMOV_V4F32:
-		turnOnFUT(1, FUT_MOVER);
+		return turnOnFUT(1, FUT_MOVER);
 		break;
 
 	case X86::CMP16mi:
@@ -348,7 +348,7 @@
 	case X86::CMPSDrr:
 	case X86::CMPSSrm:
 	case X86::CMPSSrr:
-		turnOnFUT(1, FUT_CMP);
+		return turnOnFUT(1, FUT_CMP);
 		break;
 
 	case X86::COS_F:
@@ -561,6 +561,9 @@
 	case X86::IN32rr:
 	case X86::IN8ri:
 	case X86::IN8rr:
+		return turnOnFUT(FUT_ALL);
+		break;
+
 	case X86::INC16m:
 	case X86::INC16r:
 	case X86::INC32m:
@@ -573,6 +576,9 @@
 	case X86::INC64r:
 	case X86::INC8m:
 	case X86::INC8r:
+		return turnOnFUT(FUT_INT_ADDER_ARITH);
+		break;
+
 	case X86::INSERTPSrm:
 	case X86::INSERTPSrr:
 	case X86::ISTT_FP16m:
@@ -669,7 +675,7 @@
 	case X86::Int_UCOMISDrr:
 	case X86::Int_UCOMISSrm:
 	case X86::Int_UCOMISSrr:
-		turnOnFUT(FUT_ALL);
+		return turnOnFUT(FUT_ALL);
 		break;
 
 	case X86::TAILCALL:
@@ -698,7 +704,7 @@
 	case X86::JO:
 	case X86::JP:
 	case X86::JS:
-		turnOnFUT(1, FUT_BRANCH);
+		return turnOnFUT(1, FUT_BRANCH);
 		break;
 
 	case X86::LAHF:
@@ -927,7 +933,7 @@
 	case X86::MMX_V_SET0:
 	case X86::MMX_V_SETALLONES:
 	case X86::MONITOR:
-		turnOnFUT(FUT_ALL);
+		return turnOnFUT(FUT_ALL);
 		break;
 
 	case X86::MOV16_mr:
@@ -1085,7 +1091,7 @@
 	case X86::MOV_Fp8032:
 	case X86::MOV_Fp8064:
 	case X86::MOV_Fp8080:
-		turnOnFUT(1, FUT_MOVER);
+		return turnOnFUT(1, FUT_MOVER);
 		break;
 
 	case X86::MPSADBWrmi:
@@ -1589,7 +1595,7 @@
 	case X86::SBB64rm:
 	case X86::SBB64rr:
 	case X86::SBB8mi:
-		turnOnFUT(FUT_ALL);
+		return turnOnFUT(FUT_ALL);
 		break;
 
 	case X86::SETAEm:
@@ -1620,7 +1626,7 @@
 	case X86::SETPr:
 	case X86::SETSm:
 	case X86::SETSr:
-		turnOnFUT(1, FUT_SET);
+		return turnOnFUT(1, FUT_SET);
 		break;
 
 	case X86::SFENCE:
@@ -1739,7 +1745,7 @@
 	case X86::ST_FpP80m32:
 	case X86::ST_FpP80m64:
 	case X86::ST_Frr:
-		turnOnFUT(FUT_ALL);
+		return turnOnFUT(FUT_ALL);
 		break;
 
 	case X86::SUB16mi:
@@ -1798,7 +1804,7 @@
 	case X86::SUBSSrm_Int:
 	case X86::SUBSSrr:
 	case X86::SUBSSrr_Int:
-		turnOnFUT(1, FUT_INT_ADDER_ARITH);
+		return turnOnFUT(1, FUT_INT_ADDER_ARITH);
 		break;
 
 	case X86::SUB_F32m:
@@ -1822,14 +1828,14 @@
 	case X86::SUB_FpI32m64:
 	case X86::SUB_FpI32m80:
 	case X86::SUB_FrST0:
-		turnOnFUT(1, FUT_FP_ADDER);
+		return turnOnFUT(1, FUT_FP_ADDER);
 		break;
 
 	case X86::TCRETURNdi:
 	case X86::TCRETURNdi64:
 	case X86::TCRETURNri:
 	case X86::TCRETURNri64:
-		turnOnFUT(1, FUT_ALL);
+		return turnOnFUT(1, FUT_ALL);
 		break;
 
 	case X86::TEST16mi:
@@ -1848,7 +1854,7 @@
 	case X86::TEST8ri:
 	case X86::TEST8rm:
 	case X86::TEST8rr:
-		turnOnFUT(1, FUT_LOGIC);
+		return turnOnFUT(1, FUT_LOGIC);
 		break;
 
 	case X86::TLS_addr32:
@@ -1891,7 +1897,7 @@
 	case X86::XCHG64rm:
 	case X86::XCHG8rm:
 	case X86::XCH_F:
-		turnOnFUT(FUT_ALL);
+		return turnOnFUT(FUT_ALL);
 		break;
 
 	case X86::XOR16mi:
@@ -1924,10 +1930,10 @@
 	case X86::XORPDrr:
 	case X86::XORPSrm:
 	case X86::XORPSrr:
-		turnOnFUT(1, FUT_INT_ADDER_LOGIC);
+		return turnOnFUT(1, FUT_INT_ADDER_LOGIC);
 		break;
 
 	case X86::INSTRUCTION_LIST_END:
 	default:
-		turnOnFUT(FUT_ALL);
+		return turnOnFUT(FUT_ALL);
 		break;
