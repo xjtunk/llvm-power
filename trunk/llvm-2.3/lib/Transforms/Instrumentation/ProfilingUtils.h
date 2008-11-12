@@ -17,6 +17,14 @@
 #ifndef PROFILINGUTILS_H
 #define PROFILINGUTILS_H
 
+// ahmad
+#include  <vector>
+#include  <map>
+#include  "llvm/Value.h"
+
+std::map<Function*, std::vector<Value*> > InstructionMap;
+std::map<Function*, std::vector<BasicBlock*> > BasicBlockMap;
+
 namespace llvm {
   class Function;
   class GlobalValue;
@@ -24,8 +32,10 @@ namespace llvm {
 
   void InsertProfilingInitCall(Function *MainFn, const char *FnName,
                                GlobalValue *Arr = 0);
+  // ahmad added
   void IncrementCounterInBlock(BasicBlock *BB, unsigned CounterNum,
-                               GlobalValue *CounterArray);
+                               GlobalValue *CounterArray, 
+                               std::vector<Value*> * InstructionArray=NULL);
 }
 
 #endif

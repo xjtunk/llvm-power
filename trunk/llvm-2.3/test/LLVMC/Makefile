@@ -1,7 +1,7 @@
 CC=llvm-gcc
 CFLAGS=-emit-llvm
 LDFLAGS=
-SOURCES=tracetest.cpp tracetest1.cpp loop.cpp
+SOURCES=tracetest.cpp tracetest1.cpp loop.cpp manycalls.cpp
 OBJECTS=$(SOURCES:.cpp=.bc)
 GRAPH_OBJECTS=$(SOURCES:.cpp=.ps)
 ###EXECUTABLE=hello

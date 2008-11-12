@@ -98,7 +98,9 @@ void llvm::InsertProfilingInitCall(Function *MainFn, const char *FnName,
 }
 
 void llvm::IncrementCounterInBlock(BasicBlock *BB, unsigned CounterNum,
-                                   GlobalValue *CounterArray) {
+                                   GlobalValue *CounterArray,
+                               std::vector<Value*> * InstructionArray)
+{
   // Insert the increment after any alloca or PHI instructions...
   BasicBlock::iterator InsertPos = BB->begin();
   while (isa<AllocaInst>(InsertPos) || isa<PHINode>(InsertPos))
@@ -116,5 +118,14 @@ void llvm::IncrementCounterInBlock(BasicBlock *BB, unsigned CounterNum,
   Value *NewVal = BinaryOperator::create(Instruction::Add, OldVal,
                                          ConstantInt::get(Type::Int32Ty, 1),
                                          "NewFuncCounter", InsertPos);
-  new StoreInst(NewVal, ElementPtr, InsertPos);
+  Value *StoreVal = new StoreInst(NewVal, ElementPtr, InsertPos);
+
+  // ahmad added to store instructions here.
+  if(InstructionArray)
+  {
+    InstructionArray->push_back(OldVal);
+    InstructionArray->push_back(NewVal);
+    InstructionArray->push_back(StoreVal);
+  }
 }
+
