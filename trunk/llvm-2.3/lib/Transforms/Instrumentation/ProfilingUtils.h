@@ -21,9 +21,10 @@
 #include  <vector>
 #include  <map>
 #include  "llvm/Value.h"
+#include  "llvm/Function.h"
 
-std::map<Function*, std::vector<Value*> > InstructionMap;
-std::map<Function*, std::vector<BasicBlock*> > BasicBlockMap;
+extern std::map<llvm::Function*, std::vector<llvm::Value*> > InstructionMap;
+extern std::map<llvm::Function*, std::vector<llvm::BasicBlock*> > BasicBlockMap;
 
 namespace llvm {
   class Function;
