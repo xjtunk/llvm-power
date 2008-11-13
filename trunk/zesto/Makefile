@@ -188,7 +188,7 @@ include make.target
 #
 #all: $(PROGS)
 default: sim-zesto
-all: sim-zesto sim-bpred sim-eio sim-fast sim-uop sim-cache
+all: sim-zesto sim-bpred sim-eio sim-fast sim-uop sim-cache main
 
 syscall.$(OEXT): syscall.c syscall.h thread.h
 	gcc $(CFLAGS) -c $*.c
@@ -252,6 +252,8 @@ sim-zesto3$(EEXT):	sysprobe$(EEXT) sim-zesto.$(OEXT) $(OBJS) $(ZOBJS) $(EXOOBJS)
 sim-zesto4$(EEXT):	sysprobe$(EEXT) sim-zesto.$(OEXT) $(OBJS) $(ZOBJS) $(EXOOBJS)
 	$(CC) -o sim-zesto4$(EEXT) $(CFLAGS) sim-zesto.$(OEXT) $(OBJS) $(ZOBJS) $(EXOOBJS) $(MLIBS)
 
+
+	
 exo $(EXOOBJS): sysprobe$(EEXT)
 	cd libexo $(CS) \
 	$(MAKE) "MAKE=$(MAKE)" "CC=$(CC)" "AR=$(AR)" "AROPT=$(AROPT)" "RANLIB=$(RANLIB)" "CFLAGS=$(MFLAGS) $(FFLAGS) $(OFLAGS)" "OEXT=$(OEXT)" "LEXT=$(LEXT)" "EEXT=$(EEXT)" "X=$(X)" "RM=$(RM)" libexo.$(LEXT)
