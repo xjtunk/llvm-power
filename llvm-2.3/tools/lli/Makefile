@@ -9,7 +9,7 @@
 
 LEVEL    := ../..
 TOOLNAME := lli
-LINK_COMPONENTS := jit interpreter native bitreader selectiondag instrumentation bitwriter
+LINK_COMPONENTS := jit interpreter native bitreader selectiondag instrumentation bitwriter 
 ###LINK_COMPONENTS := bitreader bitwriter instrumentation scalaropts ipo
 
 # Enable JIT support
