@@ -37,6 +37,8 @@ namespace llvm {
   void IncrementCounterInBlock(BasicBlock *BB, unsigned CounterNum,
                                GlobalValue *CounterArray, 
                                std::vector<Value*> * InstructionArray=NULL);
+  // brooks added
+  void RemoveCountersInFunction(Function *F);
 }
 
 #endif

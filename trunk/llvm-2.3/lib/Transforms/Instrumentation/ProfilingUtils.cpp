@@ -20,10 +20,13 @@
 #include "llvm/Instructions.h"
 #include "llvm/Module.h"
 
-void llvm::InsertProfilingInitCall(Function *MainFn, const char *FnName,
-                                   GlobalValue *Array) {
-  const Type *ArgVTy = 
-    PointerType::getUnqual(PointerType::getUnqual(Type::Int8Ty));
+
+std::map<llvm::Function*, std::vector<llvm::Value*> > InstructionMap;
+std::map<llvm::Function*, std::vector<llvm::BasicBlock*> > BasicBlockMap;
+
+void llvm::InsertProfilingInitCall(Function *MainFn, const char *FnName, GlobalValue *Array)
+{
+  const Type *ArgVTy = PointerType::getUnqual(PointerType::getUnqual(Type::Int8Ty));
   const PointerType *UIntPtr = PointerType::getUnqual(Type::Int32Ty);
   Module &M = *MainFn->getParent();
   Constant *InitFn = M.getOrInsertFunction(FnName, Type::Int32Ty, Type::Int32Ty,
@@ -97,9 +100,7 @@ void llvm::InsertProfilingInitCall(Function *MainFn, const char *FnName,
   }
 }
 
-void llvm::IncrementCounterInBlock(BasicBlock *BB, unsigned CounterNum,
-                                   GlobalValue *CounterArray,
-                               std::vector<Value*> * InstructionArray)
+void llvm::IncrementCounterInBlock(BasicBlock *BB, unsigned CounterNum, GlobalValue *CounterArray, std::vector<Value*> * InstructionArray)
 {
   // Insert the increment after any alloca or PHI instructions...
   BasicBlock::iterator InsertPos = BB->begin();
@@ -127,5 +128,13 @@ void llvm::IncrementCounterInBlock(BasicBlock *BB, unsigned CounterNum,
     InstructionArray->push_back(NewVal);
     InstructionArray->push_back(StoreVal);
   }
+}
+
+// added by brooks
+void llvm::RemoveCountersInFunction(Function *F) {
+	//std::map<llvm::Function*, std::vector<llvm::Value*> > InstructionMap;
+	for (int i = 0; i < static_cast<int>(InstructionMap[F].size()); ++i) {
+		dynamic_cast<Instruction*>(InstructionMap[F][i])->eraseFromParent();
+	}
 }
 
