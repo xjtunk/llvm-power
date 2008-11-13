@@ -127,6 +127,7 @@ bool llvm::SplitCriticalEdge(TerminatorInst *TI, unsigned SuccNum, Pass *P,
   BasicBlock *TIBB = TI->getParent();
   BasicBlock *DestBB = TI->getSuccessor(SuccNum);
 
+  //brooks add this basicblock
   // Create a new basic block, linking it into the CFG.
   BasicBlock *NewBB = BasicBlock::Create(TIBB->getName() + "." +
                                          DestBB->getName() + "_crit_edge");

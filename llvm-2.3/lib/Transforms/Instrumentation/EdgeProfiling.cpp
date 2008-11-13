@@ -79,6 +79,7 @@ bool EdgeProfiler::runOnModule(Module &M) {
         // in the source or destination of the edge.
         TerminatorInst *TI = BB->getTerminator();
         for (unsigned s = 0, e = TI->getNumSuccessors(); s != e; ++s) {
+			// brooks: add BB from split edge
           // If the edge is critical, split it.
           SplitCriticalEdge(TI, s, this);
 
@@ -87,10 +88,10 @@ bool EdgeProfiler::runOnModule(Module &M) {
           // otherwise insert it in the successor block.
           if (TI->getNumSuccessors() == 1) {
             // Insert counter at the start of the block
-            IncrementCounterInBlock(BB, i++, Counters);
+            IncrementCounterInBlock(BB, i++, Counters, &InstructionMap[F]);
           } else {
             // Insert counter at the start of the block
-            IncrementCounterInBlock(TI->getSuccessor(s), i++, Counters);
+            IncrementCounterInBlock(TI->getSuccessor(s), i++, Counters, &InstructionMap[F]);
           }
         }
       }
