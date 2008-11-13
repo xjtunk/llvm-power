@@ -208,7 +208,7 @@ bool X86TargetMachine::addSimpleCodeEmitter(PassManagerBase &PM, bool Fast,
 
 // ahmad added a preemit pass here.
 bool X86TargetMachine::addPreEmitPass(PassManagerBase &PM, bool Fast) {
-  pdebug();
-  PM.add(createX86PowerOptimizationPass());
+///  pdebug();
+///  PM.add(createX86PowerOptimizationPass());
   return true;
 }

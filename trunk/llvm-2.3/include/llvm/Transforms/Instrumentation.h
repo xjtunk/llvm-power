@@ -32,6 +32,9 @@ ModulePass *createEdgeProfilerPass();
 ModulePass* createNullProfilerRSPass();
 FunctionPass* createRSProfilingPass();
 
+// ahmad added
+ModulePass* createReturnToJITPass();
+
 } // End llvm namespace
 
 #endif

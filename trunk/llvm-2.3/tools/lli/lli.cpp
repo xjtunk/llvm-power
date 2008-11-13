@@ -129,6 +129,7 @@ int main(int argc, char **argv, char * const *envp) {
     EE->DisableLazyCompilation();
 
   // ahmad
+#if 0
 ///  PM.add(new TargetData(*Mod);
 ///  PM.add(new PrintModulePass());
   // See if llvmprof.out exists.
@@ -146,6 +147,11 @@ int main(int argc, char **argv, char * const *envp) {
     PM.add(createEdgeProfilerPass());
     PM.run(*Mod);
   }
+#else
+  // Create a return to JIT pass and run it.
+  PM.add(createReturnToJITPass());
+  PM.run(*Mod);
+#endif
 
 
   // If the user specifically requested an argv[0] to pass into the program,
