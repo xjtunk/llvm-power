@@ -7,239 +7,353 @@
 // Because we are trying to model unlimited precision using limited number of bits.
 #define EPSILON 1e-5
 
-bool FunctionalUnitManager::functionalUnitAvailable(const unsigned long &unitNumber, const unsigned long long &now)
+
+void FunctionalUnitManager::processAtIssue(const unsigned int &mask, const tick_t &now)
 {
-  synchronize(unitNumber, now);
-  if(functionalUnits[unitNumber].status==FUS_ON)
+	int i;
+	unsigned int _mask = mask; 
+	for(i = 0; i < functionalUnits.size(); i++)
+	{
+		if(_mask & 0x1)
+		{
+			functionalUnits[i]->turnOn(now);	
+			functionalUnits[i]->updateInPipeline(); //indicate that a turnon has been dispatched but not commited
+		}
+
+		_mask >>= 1;
+	}
+
+}
+
+void FunctionalUnitManager::processAtCommit(const unsigned int &mask, const tick_t &now)
+{
+	int i;
+	unsigned int _mask = mask;
+	for(i = 0; i < functionalUnits.size(); i++)
+	{
+		if(_mask & 0x1)
+		{
+			functionalUnits[i]->updateNotInPipeline();
+		}
+		else
+		{
+			if(!functionalUnits[i]->getUpdateStatus())//only turn off an FU if a turn on hasnt been dispatched and not commited
+			{
+				functionalUnits[i]->turnOff(now);
+			}
+		
+		}
+		_mask >>= 1;
+	}
+}
+
+void FunctionalUnitManager::processAtFlush(const unsigned int &mask, const tick_t &now)
+{
+
+
+
+}
+
+
+bool FunctionalUnitManager::functionalUnitAvailable(const unsigned long &unitNumber, const tick_t &now)
+{
+  functionalUnits[unitNumber]->synchronize(now);
+  if(functionalUnits[unitNumber]->checkAvailable())
     return true;
   else
     return false;
 }
 
-void FunctionalUnitManager::gateWithMask(const unsigned long long &mask, const unsigned long long &now)
-{
-}
 
-unsigned long long FunctionalUnitManager::turnOff(const unsigned long &unitNumber, const unsigned long long &now)
+
+tick_t FunctionalUnit::turnOff(const tick_t &now)
 {
-  synchronize(unitNumber, now);
-  if(functionalUnits[unitNumber].status==FUS_OFF)
-    return 0;
-  else if(functionalUnits[unitNumber].status==FUS_ON)
+  synchronize(now);
+  
+  if(status==FUS_OFF)
+  {
+     #if DEBUG
+    	cout<<now<<": "<<getName()<<" OFF -> OFF"<<endl;
+    #endif
+  	return 0;  
+  } 
+  else if(status == FUS_ON)
   {
   	
-  	functionalUnits[unitNumber].transitionTime = now;
-    functionalUnits[unitNumber].nextClock=now+functionalUnits[unitNumber].offLatency;
-    functionalUnits[unitNumber].lastPeakPower = functionalUnits[unitNumber].onPower;
-    functionalUnits[unitNumber].totalPower += functionalUnits[unitNumber].onPower * (now - functionalUnits[unitNumber].onTime);
-    assert((now - functionalUnits[unitNumber].onTime) >= 0);
+  	transitionTime = now;
+    nextClock=now + offLatency;
+    lastPeakPower = onPower;
+    totalPower += onPower * (double)(now - onTime);
+    
+    totalOnTime += (now - onTime);
+    
+    assert((now - onTime) >= 0);
+    
+    #if DEBUG
+    	cout<<now<<": "<<getName()<<" ON -> OFF_TRANSITION"<<endl;
+    #endif
+
   }
-  else if(functionalUnits[unitNumber].status==FUS_ON_TRANSITION)
+  else if(status==FUS_ON_TRANSITION)
   {
   	
   	//if transition occured from another transition, figure out that point
-  	unsigned long long lastTransition = (unsigned long long)(((double)functionalUnits[unitNumber].onLatency/functionalUnits[unitNumber].onPower)*functionalUnits[unitNumber].lastPeakPower);
+  	tick_t lastTransition = (tick_t)( ((double)onLatency /onPower) * lastPeakPower);
   	
   	//Using parametrized line, figure out what instantateous power is
-  	unsigned long long chargedLatency = now - functionalUnits[unitNumber].transitionTime;
-  	double currentPower = (functionalUnits[unitNumber].onPower/(double)functionalUnits[unitNumber].onLatency)*(double)(chargedLatency + lastTransition);
+  	tick_t chargedLatency = now - transitionTime;
+  	
+  	//update stat
+  	totalOnTransitionTime += chargedLatency;
+  	
+  	//Calculate energy right now
+  	double currentPower = (onPower/(double)onLatency)*(double)(chargedLatency + lastTransition);
   	
   	
   	//Only add power that has been consumed
-  	double powerConsumed = .5 * currentPower * (double)chargedLatency;
-  	double powerNotConsumed = .5 * functionalUnits[unitNumber].lastPeakPower * lastTransition;
-  	functionalUnits[unitNumber].totalPower +=  (powerConsumed - powerNotConsumed);
+  	power_t powerConsumed = .5 * currentPower * (double)chargedLatency;
+  	power_t powerNotConsumed = .5 * lastPeakPower * lastTransition;
+  	
+  	totalPower +=  (powerConsumed - powerNotConsumed);
+  	
   	assert((powerConsumed - powerNotConsumed) >= 0);
-
-    // FIXME: Currently suffers all the latency for turning off, though 
-    // FIXED!!!
-    // it is not fully turned on.
     
-    //Find the intersection of the off transition curve and on transition curve (line because we're not doing exponentials)
-    double transitionPoint = (functionalUnits[unitNumber].onPower - currentPower)*((double)functionalUnits[unitNumber].offLatency/functionalUnits[unitNumber].onPower);
+    //Find the intersection of the off transition curve and on transition curve 
+    double transitionPoint = (onPower - currentPower) * ((double)offLatency/onPower);
     
-    functionalUnits[unitNumber].nextClock=now+(functionalUnits[unitNumber].offLatency - (unsigned long long)transitionPoint);
-    functionalUnits[unitNumber].transitionTime = now;
-    functionalUnits[unitNumber].lastPeakPower = currentPower;
-    assert(functionalUnits[unitNumber].nextClock > now);
+    nextClock = now + (offLatency - (tick_t)transitionPoint);
+    transitionTime = now;
+    lastPeakPower = currentPower;
+    
+    assert(nextClock > now);
+    
+    #if DEBUG
+    	cout<<now<<": "<<getName()<<" ON_TRANSITION -> OFF_TRANSITION"<<endl;
+    #endif
     
   }
-  functionalUnits[unitNumber].status=FUS_OFF_TRANSITION;
-  return functionalUnits[unitNumber].nextClock;
+  
+  status = FUS_OFF_TRANSITION;
+  return nextClock;
 }
 
-unsigned long long FunctionalUnitManager::turnOn(const unsigned long &unitNumber, const unsigned long long &now)
+tick_t FunctionalUnit::turnOn(const tick_t &now)
 {
-  synchronize(unitNumber, now);
-  if(functionalUnits[unitNumber].status==FUS_ON)
-    return 0;
-  else if(functionalUnits[unitNumber].status==FUS_OFF)
+  synchronize(now);
+  
+  if(status == FUS_ON)
   {
-  	functionalUnits[unitNumber].transitionTime = now;
-    functionalUnits[unitNumber].nextClock=now+functionalUnits[unitNumber].onLatency;
-    functionalUnits[unitNumber].lastPeakPower = 0; 
+    #if DEBUG
+    	cout<<now<<": "<<getName()<<" ON -> ON"<<endl;
+    #endif 
+  	return 0;
+  } 
+  else if(status == FUS_OFF)
+  {
+  	transitionTime = now;
+    nextClock=now + onLatency;
+    lastPeakPower = 0; 
     
+    //update stats
+    totalOffTime += (now - transitionTime);
+    #if DEBUG
+    	cout<<now<<": "<<getName()<<" OFF -> ON_TRANSITION"<<endl;
+    #endif 
     //do nothing with regards to power accum or timing
   }
-  else if(functionalUnits[unitNumber].status==FUS_OFF_TRANSITION)
+  else if(status == FUS_OFF_TRANSITION)
   {
   	unsigned long long prevOnTime, chargedLatency;
   	double powerTotal, currentPower, powerNotConsumed, transitionPoint;
   	
   	//Take total transition triangle power (or time since last transition)
-  	prevOnTime = functionalUnits[unitNumber].nextClock - functionalUnits[unitNumber].transitionTime;
-	  powerTotal =  .5 * functionalUnits[unitNumber].lastPeakPower * (double)prevOnTime; //1/2 base * height (fixed.. if there are two mid transitions in a row or something
+  	prevOnTime = nextClock - transitionTime;
+	  powerTotal =  .5 * lastPeakPower * (double)prevOnTime;
   
   	//subtract smaller triangle
   	//Using parametrized line, figure out what instantateous power is
-  	chargedLatency = now - functionalUnits[unitNumber].transitionTime;
-  	currentPower = functionalUnits[unitNumber].onPower - (functionalUnits[unitNumber].onPower/((double)prevOnTime))*(double)((functionalUnits[unitNumber].offLatency - prevOnTime) + chargedLatency); //instantaneous Power
+  	chargedLatency = now - transitionTime;
+  	
+  	totalOffTransitionTime += chargedLatency;
+  	
+  	currentPower = onPower - (onPower/((double)prevOnTime))*(double)((offLatency - prevOnTime) + chargedLatency); //instantaneous Power
   	
   	
   	//Only add power that has been consumed
   	powerNotConsumed = .5 * currentPower * (double)(prevOnTime - chargedLatency);
   
   	//Subtract larger triangle from smaller one
-  	functionalUnits[unitNumber].totalPower += (powerTotal - powerNotConsumed);
+  	totalPower += (powerTotal - powerNotConsumed);
   	assert((powerTotal - powerNotConsumed) >= 0);
   	//calculate transition point, and new latency
-  	transitionPoint = currentPower*((double)functionalUnits[unitNumber].onLatency/functionalUnits[unitNumber].onPower);
+  	transitionPoint = currentPower*((double)onLatency/onPower);
   	
-    // FIXME: Currently suffers all the latency for turning off, though
-    // FIXED!!!
+
     // it is not fully turned on.
-    functionalUnits[unitNumber].nextClock=now+(functionalUnits[unitNumber].onLatency - (unsigned long long)transitionPoint);
+    nextClock=now + (onLatency - (tick_t)transitionPoint);
     
-    functionalUnits[unitNumber].transitionTime = now;
-    functionalUnits[unitNumber].lastPeakPower = currentPower;
-    assert(functionalUnits[unitNumber].nextClock > now);
+    transitionTime = now;
+    lastPeakPower = currentPower;
+    assert(nextClock > now);
+    
+    #if DEBUG
+    	cout<<now<<": "<<getName()<<" OFF_TRANSITION -> ON_TRANSITION"<<endl;
+    #endif 
   }
-  functionalUnits[unitNumber].status=FUS_ON_TRANSITION;
-  return functionalUnits[unitNumber].nextClock;
+  status = FUS_ON_TRANSITION;
+  return nextClock;
 }
 
-double FunctionalUnitManager::getTotalPower()
-{
-	double totalPower = 0;
-	for(int i = 0; i < functionalUnits.size(); i++)
-		totalPower += functionalUnits[i].getTotalPower();
-	
-	return totalPower;
-}
 
-void FunctionalUnitManager::synchronize(const unsigned long &unitNumber, const unsigned long long &now)
+
+void FunctionalUnit::synchronize(const tick_t &now)
 {
-  assert(unitNumber<functionalUnits.size());
-  if(now==globalClock)
-    return;
-  if(functionalUnits[unitNumber].status==FUS_ON_TRANSITION &&
-      functionalUnits[unitNumber].nextClock<=now)
+   
+  
+  if(status == FUS_ON_TRANSITION && nextClock <= now)
  	{
-    functionalUnits[unitNumber].status=FUS_ON; 
-  	functionalUnits[unitNumber].onTime = now;
+    status = FUS_ON; 
+  	onTime = now;
 
   	
-  	//first check to see if an entire transition time occurred
-  	if(now - functionalUnits[unitNumber].transitionTime < functionalUnits[unitNumber].onLatency)
+  	//If the transition time was less than a full onLatency (i.e. there was a transition to off then a transition to on)
+  	if(now - transitionTime < onLatency)
   	{
-  		//partial triangle
-  		double powerTotal = .5 * functionalUnits[unitNumber].onPower * functionalUnits[unitNumber].onLatency;
+  		totalOnTransitionTime += (now - transitionTime);
+  	
+  		//Area under curve for total transition to on
+  		power_t powerTotal = .5 * onPower * (double)onLatency;
   		
-  		//figure out transition point (this stuff can obviously be optimized.. but readability more important than full opt)
-  		double transitionPower = functionalUnits[unitNumber].onPower/(double)functionalUnits[unitNumber].onLatency*((double)functionalUnits[unitNumber].onLatency - (double)functionalUnits[unitNumber].transitionTime);
+  		//Find point where the off to on transition occured
+  		double transitionPower = (onPower/(double)onLatency) * (double)(onLatency - transitionTime); //Energy at transition point
   		
-  		double powerNotConsumed = .5 * transitionPower * ((double)functionalUnits[unitNumber].onLatency - (double)functionalUnits[unitNumber].transitionTime);
+  		//Find the total area of the triange for power that was not consumed
+  		power_t powerNotConsumed = .5 * transitionPower * (double)(onLatency - transitionTime);
   		
-  		functionalUnits[unitNumber].totalPower += (powerTotal - powerNotConsumed);
+  		totalPower += (powerTotal - powerNotConsumed);
+  		
   	  assert((powerTotal - powerNotConsumed) >= 0);
+  	  #if DEBUG
+    		cout<<now<<": "<<getName()<<" ON_TRANSITION -> ON with partial transition"<<endl;
+    	#endif 
   	
   	}
   	else
   	{
+  	
+  		totalOnTransitionTime += onLatency;
   		
   		//full triangle
-  		functionalUnits[unitNumber].totalPower += .5 * functionalUnits[unitNumber].onPower * functionalUnits[unitNumber].onLatency;
-
+  		totalPower += .5 * onPower * (double)onLatency;
+  	  #if DEBUG
+    		cout<<now<<": "<<getName()<<" ON_TRANSITION -> ON with full transition"<<endl;
+    	#endif 
   	
   	}
-  	
-  	functionalUnits[unitNumber].lastPeakPower = functionalUnits[unitNumber].onPower;
-  	
+  	totalOnTransitionTime += (nextClock - transitionTime);
+  	transitionTime = nextClock;
+  	lastPeakPower = onPower;
+  	return;
   }
-  if(functionalUnits[unitNumber].status==FUS_OFF_TRANSITION &&
-      functionalUnits[unitNumber].nextClock<=now)
+  
+  if(status == FUS_OFF_TRANSITION && nextClock <= now)
   {
-    functionalUnits[unitNumber].status=FUS_OFF; 
+    status=FUS_OFF; 
   	
   	//first check to see if an entire transition time occurred
-  	if(now - functionalUnits[unitNumber].transitionTime < functionalUnits[unitNumber].offLatency)
+  	if(now - transitionTime < offLatency)
   	{
-  		//Just add smaller triangle
+  		//Just add smaller triangle  		
+  		double transitionPower = onPower - (onPower/(double)offLatency) * (double)(offLatency - transitionTime);
   		
-  		double transitionPower = functionalUnits[unitNumber].onPower - (functionalUnits[unitNumber].onPower/(double)functionalUnits[unitNumber].offLatency)*((double)functionalUnits[unitNumber].offLatency - (double)functionalUnits[unitNumber].transitionTime);
-  		
-  		functionalUnits[unitNumber].totalPower += .5 * transitionPower * (double)functionalUnits[unitNumber].transitionTime;
-  		
+  		totalPower += .5 * transitionPower * (double)transitionTime;
+  	  #if DEBUG
+    		cout<<now<<": "<<getName()<<" OFF_TRANSITION -> OFF with partial transition"<<endl;
+    	#endif   		
   	
   	}
   	else
   	{
    		//full triangle
-  		functionalUnits[unitNumber].totalPower += .5 * functionalUnits[unitNumber].onPower * functionalUnits[unitNumber].onLatency; 	
-   	
+  		totalPower += .5 * onPower * (double)onLatency; 	
+  		
+   	  #if DEBUG
+    		cout<<now<<": "<<getName()<<" OFF_TRANSITION -> OFF with full transition"<<endl;
+    	#endif 
   	}		
-		
-		functionalUnits[unitNumber].lastPeakPower = 0;
-
+		totalOffTransitionTime += (nextClock - transitionTime);
+		transitionTime = nextClock;
+		lastPeakPower = 0;
+		return;
 	}
+
+	
 }
 
-void FunctionalUnitManager::synchronize(const unsigned long long &now)
+void FunctionalUnitManager::synchronize(const tick_t &now)
 {
   if(now==globalClock)
     return;
+    
   for( unsigned int i=0 ; i<functionalUnits.size() ; i++ )
   {
-/*    if(functionalUnits[i].status==FUS_ON_TRANSITION &&
-       functionalUnits[i].nextClock<=now)
-     functionalUnits[i].status=FUS_ON; 
-    if(functionalUnits[i].status==FUS_OFF_TRANSITION &&
-       functionalUnits[i].nextClock<=now)
-     functionalUnits[i].status=FUS_ON; 
-  */
-  	synchronize(i, now);
+  	functionalUnits[i]->synchronize(now);
   
   }
-  globalClock=now;
+  
+  globalClock = now;
+}
+
+power_t FunctionalUnitManager::getTotalPower(const tick_t &now)
+{
+	double totalPower = 0;
+	for(int i = 0; i < functionalUnits.size(); i++)
+		totalPower += functionalUnits[i]->getTotalPower(now);
+	
+	return totalPower;
 }
 
 int FunctionalUnitManager::readFunctionalUnitFile(const char * filename)
 {
-  unsigned int size=0;
-  stringbuf sb;
-  istream infile;
-  dynarray<char*> tokens;
-
+	
+  ifstream infile;
+  
+  string line;
+		
   infile.open(filename);
   if(!infile)
     return -1;
 
-  while(infile.size()!=infile.where())
+  while(!infile.eof())
   {
-    sb.reset();
-    infile.readline(sb);
-    // tokenize it using spaces. See how many tokens we have.
-    tokens.tokenize(sb, " ");
-    // ignore comment tokens and !=4 lines
-///    printf("token string: %s index: %d # of tokens: %d position: %lld\n", (char*)sb, size, tokens.size(), infile.where());
-    if(tokens.size()!=4 || tokens[0][0]=='#')
-      continue;
-    size++;
-    functionalUnits.resize(size);
-    functionalUnits[size-1].name = tokens[0];
-    functionalUnits[size-1].onPower = atof(tokens[1]);
-    functionalUnits[size-1].offLatency = atoll(tokens[2]);
-    functionalUnits[size-1].onLatency = atoll(tokens[3]);
+  	getline(infile, line);
+  
+ 		stringstream ss(line);
+ 		
+  	vector<string> tokens;
+  	
+  	string token;
+  	while(getline(ss, token, ' ') )
+  	{
+  		tokens.push_back(token);
+  	}
+
+		if(tokens.size() != 4 || tokens[0].at(0) == '#')
+			continue;
+
+		//convert from string to appropriate type
+		string name = tokens[0];
+		tick_t onLatency, offLatency;
+		power_t onPower;
+		
+		stringstream op(tokens[1]);
+		stringstream offl(tokens[2]);
+		stringstream onl(tokens[3]);
+		op >> onPower;
+		offl >> offLatency;
+		onl >> onLatency;
+		
+    functionalUnits.push_back(new FunctionalUnit(name, onLatency, offLatency, onPower));
   }
   infile.close();
 
@@ -249,17 +363,27 @@ int FunctionalUnitManager::readFunctionalUnitFile(const char * filename)
 void FunctionalUnitManager::dumpFunctionalUnits()
 {
   printf("Printing functional units\n");
-  printf("Name\tonPower\toffLatency\tonLatency\n");
   for( unsigned int i=0 ; i<functionalUnits.size() ; i++ )
   {
-    printf("%s\t%lf\t%lld\t%lld\n",
-    (char*)functionalUnits[i].name,
-    functionalUnits[i].onPower,
-    functionalUnits[i].offLatency,
-    functionalUnits[i].onLatency);
+		functionalUnits[i]->printFU();
   }
   printf("Done printing functional units\n");
 }
 
+void FunctionalUnitManager::dumpStats(const tick_t &now)
+{
+  for( unsigned int i=0 ; i<functionalUnits.size() ; i++ )
+  {
+  	FunctionalUnit* FU = functionalUnits[i];
+		cout<<"\t"
+				<<FU->getName()<<": TotalPower("<<FU->getTotalPower(now)
+				<<") TotalOnTime("<<FU->getTimeSpentOn(now)
+				<<") TotalOffTime("<<FU->getTimeSpentOff(now)
+				<<") TotalOnTransitionTime("<<FU->getTimeInOnTransition()
+				<<") TotalOffTransitionTime("<<FU->getTimeInOffTransition()<<")"
+				<<endl;
+  }
+
+}
 #undef LOG2
 #undef EPSILON
