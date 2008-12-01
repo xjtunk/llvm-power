@@ -1,4 +1,5 @@
 #include  "gatinglib.h"
+#include <cassert>
 
 // Useful functions for converting a bitmask into individual functional unit indices.
 #define LOG2(x) (ffs(x)-1)
