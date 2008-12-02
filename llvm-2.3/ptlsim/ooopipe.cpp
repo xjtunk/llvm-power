@@ -15,9 +15,11 @@
 #include <logic.h>
 #include <dcache.h>
 
+
 #define INSIDE_OOOCORE
 #include <ooocore.h>
 #include <stats.h>
+
 
 #ifndef ENABLE_CHECKS
 #undef assert
@@ -30,6 +32,8 @@
 #endif
 
 using namespace OutOfOrderModel;
+
+
 
 void OutOfOrderCoreCacheCallbacks::icache_wakeup(LoadStoreInfo lsi, W64 physaddr) {
   foreach (i, core.threadcount) {
@@ -1995,6 +1999,13 @@ int ReorderBufferEntry::commit() {
   per_context_ooocore_stats_update(threadid, commit.uops++);
   thread.total_uops_committed++;
 
+	//Jonathan: I think we can be assured here that a commit is actually occuring
+	//Insert gatinglib commit here
+	if(uop.opcode == 0x138)
+	{
+		
+		FunctionalUnitManager::getFUM()->processAtCommit(uop.rbimm, sim_cycle);// not sure if this is right.... but its close
+	}
   bool uop_is_eom = uop.eom;
   bool uop_is_barrier = isclass(uop.opcode, OPCLASS_BARRIER);
   bool uop_is_fence = (uop.opcode == OP_mf);

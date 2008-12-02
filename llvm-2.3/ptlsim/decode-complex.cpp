@@ -2343,12 +2343,17 @@ bool TraceDecoder::decode_complex() {
 
   // Ahmad added this...
   case 0x138: {
-///    logfile << "AHMAD: Power gating opcode encountered!\n";
-///    logfile << ctx, endl, flush;
+ //   logfile << "AHMAD: Power gating opcode encountered!\n";
+//    logfile << ctx, endl, flush;
+		//trigger gate instruction
+		
+		
+
     EndOfDecode();
-    cerr << "Power gating instruction encountered!\n";
+ //   cerr << "Power gating instruction encountered! Bistring "<<REG_imm<<endl;
+    FunctionalUnitManager::getFUM()->processAtIssue(REG_imm, sim_cycle);
     MakeInvalid();
-    cerr << "Breaking out of the decode\n";
+  //  cerr << "Breaking out of the decode\n";
     end_of_block = 1;
     break;
   }

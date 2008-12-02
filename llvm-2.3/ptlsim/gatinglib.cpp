@@ -1,4 +1,4 @@
-#include  "gatinglib.h"
+#include  <gatinglib.h>
 #include <cassert>
 
 // Useful functions for converting a bitmask into individual functional unit indices.
@@ -8,6 +8,7 @@
 // Because we are trying to model unlimited precision using limited number of bits.
 #define EPSILON 1e-5
 
+extern FunctionalUnitManager FUM;
 
 void FunctionalUnitManager::processAtIssue(const unsigned int &mask, const tick_t &now)
 {
@@ -291,6 +292,17 @@ void FunctionalUnit::synchronize(const tick_t &now)
 	
 }
 
+FunctionalUnitManager::FunctionalUnitManager(const char * filename)
+	{
+		if(!readFunctionalUnitFile(filename))
+		{
+			globalClock = 0;
+			
+		}
+		else
+			cerr<<"Error reading file "<<filename<<endl;
+	
+	}
 void FunctionalUnitManager::synchronize(const tick_t &now)
 {
   if(now==globalClock)
@@ -314,61 +326,47 @@ power_t FunctionalUnitManager::getTotalPower(const tick_t &now)
 	return totalPower;
 }
 
+
 int FunctionalUnitManager::readFunctionalUnitFile(const char * filename)
 {
 	
-  ifstream infile;
-  
-  string line;
-		
+  unsigned int size=0;
+  stringbuf sb;
+  istream infile;
+  dynarray<char*> tokens;
+
   infile.open(filename);
   if(!infile)
     return -1;
 
-  while(!infile.eof())
+  while(infile.size()!=infile.where())
   {
-  	getline(infile, line);
-  
- 		stringstream ss(line);
- 		
-  	vector<string> tokens;
-  	
-  	string token;
-  	while(getline(ss, token, ' ') )
-  	{
-  		tokens.push_back(token);
-  	}
-
-		if(tokens.size() != 4 || tokens[0].at(0) == '#')
-			continue;
-
-		//convert from string to appropriate type
-		string name = tokens[0];
-		tick_t onLatency, offLatency;
-		power_t onPower;
-		
-		stringstream op(tokens[1]);
-		stringstream offl(tokens[2]);
-		stringstream onl(tokens[3]);
-		op >> onPower;
-		offl >> offLatency;
-		onl >> onLatency;
-		
-    functionalUnits.push_back(new FunctionalUnit(name, onLatency, offLatency, onPower));
+    sb.reset();
+    infile.readline(sb);
+    // tokenize it using spaces. See how many tokens we have.
+    tokens.tokenize(sb, " ");
+    // ignore comment tokens and !=4 lines
+///    printf("token string: %s index: %d # of tokens: %d position: %lld\n", (char*)sb, size, tokens.size(), infile.where());
+    if(tokens.size()!=4 || tokens[0][0]=='#')
+      continue;
+    size++;
+    functionalUnits.resize(size);
+    functionalUnits[size-1] = new FunctionalUnit(tokens[0], atoll(tokens[2]),atoll(tokens[3]), atof(tokens[1]));
   }
   infile.close();
+
 
   return 0;
 }
 
 void FunctionalUnitManager::dumpFunctionalUnits()
 {
-  printf("Printing functional units\n");
+  cerr<<"Printing functional units"<<endl;
   for( unsigned int i=0 ; i<functionalUnits.size() ; i++ )
   {
 		functionalUnits[i]->printFU();
   }
-  printf("Done printing functional units\n");
+  cerr<<"Done printing functional units\n"<<endl;
 }
 
 void FunctionalUnitManager::dumpStats(const tick_t &now)
@@ -376,13 +374,7 @@ void FunctionalUnitManager::dumpStats(const tick_t &now)
   for( unsigned int i=0 ; i<functionalUnits.size() ; i++ )
   {
   	FunctionalUnit* FU = functionalUnits[i];
-		cout<<"\t"
-				<<FU->getName()<<": TotalPower("<<FU->getTotalPower(now)
-				<<") TotalOnTime("<<FU->getTimeSpentOn(now)
-				<<") TotalOffTime("<<FU->getTimeSpentOff(now)
-				<<") TotalOnTransitionTime("<<FU->getTimeInOnTransition()
-				<<") TotalOffTransitionTime("<<FU->getTimeInOffTransition()<<")"
-				<<endl;
+		cerr<<"\t "<<FU->getName()<<": TotalPower("<<FU->getTotalPower(now)<<") TotalOnTime("<<FU->getTimeSpentOn(now)<<") TotalOffTime("<<FU->getTimeSpentOff(now)<<") TotalOnTransitionTime("<<FU->getTimeInOnTransition()<<") TotalOffTransitionTime("<<FU->getTimeInOffTransition()<<endl;
   }
 
 }
