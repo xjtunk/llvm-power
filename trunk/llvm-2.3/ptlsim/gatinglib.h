@@ -2,11 +2,9 @@
 #define  __GATINGLIB_H__
 
 // copied from PTLSim
-#include <fstream>
-#include <iostream>
-#include <vector>
-#include <string>
-#include <sstream>
+#include <globals.h>
+#include <superstl.h>
+#include <stdio.h>
 
 
 typedef unsigned long long tick_t;
@@ -14,7 +12,7 @@ typedef unsigned int mask_t;
 typedef double power_t;
 
 
-#define DEBUG 1
+//#define DEBUG 1
 using namespace std;
 
 // Not being used at the moment, but will likely be useful.
@@ -38,7 +36,7 @@ enum FunctionalUnitStatus
 class FunctionalUnit
 {
 public:
-	FunctionalUnit(string& _name, tick_t _onLatency, tick_t _offLatency, power_t _onPower)
+	FunctionalUnit(char* _name, tick_t _onLatency, tick_t _offLatency, power_t _onPower)
 		: name(_name), onPower(_onPower), offLatency(_offLatency), onLatency(_onLatency)
 		{
 			//state attributes
@@ -69,7 +67,7 @@ public:
 	bool checkAvailable() {return status == FUS_ON;}
 	
 	//stats
-	string getName() {return name; }
+	char* getName() {return name; }
 	
 	power_t getTotalPower(const time_t &now) 
 	{
@@ -113,7 +111,7 @@ public:
 	}
 private:
 	//constant attributes
-	string name;
+	char* name;
   power_t onPower; // power that it consumes if fully on (peak power)
   tick_t offLatency;
   tick_t onLatency;	
@@ -140,17 +138,7 @@ private:
 class FunctionalUnitManager
 {
 public:
-	FunctionalUnitManager(const char * filename)
-	{
-		if(!readFunctionalUnitFile(filename))
-		{
-			globalClock = 0;
-			
-		}
-		else
-			cerr<<"Error reading file "<<filename<<endl;
-	
-	}
+	FunctionalUnitManager(const char * filename);
 
 	//Processor Interface
 	void processAtIssue(const mask_t &mask, const tick_t &now);
@@ -165,14 +153,22 @@ public:
   void dumpFunctionalUnits();
   void dumpStats(const tick_t &now);
   bool functionalUnitAvailable(const unsigned long &unitNumber, const tick_t &now);
+  static FunctionalUnitManager* getFUM()
+  {
+		static FunctionalUnitManager* FUM = new FunctionalUnitManager("fu.txt");
+		return FUM;  
+  
+  }
   
 private:
   // The last clock that was synchronized
   tick_t globalClock;
 
   // This is the vector of functional units.
-  vector<FunctionalUnit*> functionalUnits;
- 
+  dynarray<FunctionalUnit*> functionalUnits;
+  // IO
+  // Read an input (usually from fu.txt), and create the functional unit vector.
+  int readFunctionalUnitFile(const char * filename); 
   
   //Maintainance Functions
   // turn off a functional unit.
@@ -184,11 +180,10 @@ private:
   void synchronize(const unsigned long &unitNumber, const tick_t &now);
 
 	
-  // IO
-  // Read an input (usually from fu.txt, and create the functional unit vector.
-  int readFunctionalUnitFile(const char * filename);
+
 
 };
+
 
 
 #endif  /*__GATINGLIB_H__*/

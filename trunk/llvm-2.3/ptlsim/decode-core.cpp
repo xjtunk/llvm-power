@@ -2220,6 +2220,7 @@ void bbcache_reclaim(size_t bytes, int urgency) {
 }
 
 void init_decode() {
+
   ptl_mm_register_reclaim_handler(bbcache_reclaim);
 }
 
