@@ -1,5 +1,5 @@
 CC=llvm-gcc
-CFLAGS=-emit-llvm
+CFLAGS=-emit-llvm -static
 LDFLAGS=
 SOURCES=tracetest.cpp tracetest1.cpp loop.cpp manycalls.cpp dynamic.cpp
 OBJECTS=$(SOURCES:.cpp=.bc)

@@ -15,5 +15,8 @@ void break_fn(W64 mask)
 {
 ///  asm(".byte 0x0f; .byte 0x3f; .long 0x77777777;");
   GATE_INSTR(43);
+  float f=33;
+  f*=5;
+  GATE_INSTR(22);
 ///  asm("movl %ecx, %eax");
 }

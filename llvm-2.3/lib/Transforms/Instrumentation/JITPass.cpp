@@ -25,6 +25,7 @@ reads and runs additional passes on the function.
 #include "llvm/Support/MutexGuard.h"
 #include "llvm/Transforms/Utils/Cloning.h"
 #include "../lib/ExecutionEngine/JIT/JIT.h"
+#include "llvm/DerivedTypes.h"
 
 using namespace std;
 using namespace llvm;
@@ -33,9 +34,9 @@ using namespace llvm;
 queue <string> *g_hot_messages;
 sys :: Mutex *g_jit_lock;
 
-void InsertMessage(const char *m)
+void InsertMessage(Function *F)
 {
-  printf("******** Back into the runtime: %s\n", m);
+  printf("Back into the runtime: %s\n", F->getName().c_str());
 ///  MutexGuard locked(*g_jit_lock);
 ///  g_hot_messages->push(m);
 }
@@ -76,7 +77,7 @@ public:
        };
        Constant *hot_threshold = ConstantInt :: get(Type :: Int32Ty, 20),
                 *printf_function = M.getFunction("printf");
-///       assert(printf_function!=0);
+       assert(printf_function!=0);
 
       for (Module::iterator f = M.begin(); f != M.end(); ++f)
       {
@@ -100,20 +101,38 @@ public:
         Constant *message = ConstantArray :: get(f->getName() + " is cold\n");
         GlobalVariable *message_global = new GlobalVariable(message->getType(), true, GlobalValue::InternalLinkage, message, "", &M);
         message = ConstantExpr::getGetElementPtr(message_global, zeros, 2);
-///        CallInst::Create(printf_function, message, "", new_entry);
+        CallInst::Create(printf_function, message, "", new_entry);
 
         BranchInst :: Create(hot_block, old_entry, new ICmpInst(ICmpInst::ICMP_EQ, result, zero, "", new_entry), new_entry);
 
         //-----------------------------------hot block---------------------------------------
+        // ahmad added
         vector <const Type *> parameter_types(1);
-        parameter_types[0] = PointerType :: get(Type :: Int8Ty, 0);
+        SmallVector<Value*, 8> Args;
+        Function * fptr=f;
+        Constant *C = 0;
+        if (sizeof(void*) == 4)
+        {
+          C = ConstantInt::get(Type::Int32Ty, (int)(intptr_t)(fptr));
+          parameter_types[0] = PointerType :: get(Type :: Int32Ty, 0);
+        }
+        else
+        {
+          C = ConstantInt::get(Type::Int64Ty, (intptr_t)(fptr));
+          parameter_types[0] = PointerType :: get(Type :: Int64Ty, 0);
+        }
+        C = ConstantExpr::getIntToPtr(C, parameter_types[0]);  // Cast the integer to pointer
+        Args.push_back(C);
+
+///        parameter_types[0] = PointerType :: get(Type :: Int8Ty, 0);
 
         Constant *fname = ConstantArray :: get(f->getName());
         GlobalVariable *fname_global = new GlobalVariable(fname->getType(), true, GlobalValue::InternalLinkage, fname, "", &M);
         fname = ConstantExpr::getGetElementPtr(fname_global, zeros, 2);
-        Value *insert_message_function = ConstantExpr :: getIntToPtr(ConstantInt :: get(Type :: Int64Ty, (uint64_t)InsertMessage),
+        Value *insert_message_function = ConstantExpr :: getIntToPtr(ConstantInt :: get(Type :: Int32Ty, (uint32_t)InsertMessage),
                    PointerType :: get(FunctionType::get(Type :: VoidTy, parameter_types, false), 0));
-        CallInst :: Create(insert_message_function, fname, "", hot_block);
+///        CallInst :: Create(insert_message_function, fname, "", hot_block);
+        CallInst::Create(insert_message_function, Args.begin(), Args.end(), "", hot_block);
         BranchInst :: Create(old_entry, hot_block);
       }
       //cout << M;
