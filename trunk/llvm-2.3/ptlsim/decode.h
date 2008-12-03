@@ -13,9 +13,6 @@
 #include <ptlsim.h>
 #include <datastore.h>
 
-#include <gatinglib.h>
-
-
 struct RexByte { 
   // a.k.a., b, x, r, w
   byte extbase:1, extindex:1, extreg:1, mode64:1, insnbits:4; 
@@ -97,8 +94,6 @@ extern const byte reg16_to_uniform_reg[16];
 extern const byte reg8_to_uniform_reg[8];
 extern const byte reg8x_to_uniform_reg[16];
 extern const byte segreg_to_uniform_reg[16];
-
-
 
 //
 // Decoded Operand

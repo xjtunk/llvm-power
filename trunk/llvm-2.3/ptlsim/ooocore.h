@@ -14,8 +14,6 @@
 #define ENABLE_CHECKS
 #define ENABLE_LOGGING
 
-
-#include <gatinglib.h>
 //
 // Enable SMT operation:
 //
@@ -50,8 +48,6 @@ static const int MAX_THREADS_PER_CORE = 1;
 
 #define per_context_ooocore_stats_ref(vcpuid) (*(((PerContextOutOfOrderCoreStats*)&stats.ooocore.vcpu0) + (vcpuid)))
 #define per_context_ooocore_stats_update(vcpuid, expr) stats.ooocore.total.expr, per_context_ooocore_stats_ref(vcpuid).expr
-
-
 
 namespace OutOfOrderModel {
   //
