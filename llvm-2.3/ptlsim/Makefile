@@ -104,8 +104,8 @@ CPPFILES = $(COMMONCPPFILES) $(OOOCPPFILES)
 CFLAGS += -D__PTLSIM_OOO_ONLY__
 
 # Ahmad changed this for now
-###TOPLEVEL = ptlsim ptlstats ptlcalls.o ptlcalls-32bit.o cpuid
-TOPLEVEL = main
+TOPLEVEL = ptlsim ptlstats ptlcalls.o ptlcalls-32bit.o cpuid
+###TOPLEVEL = main
 ifdef PTLSIM_HYPERVISOR
 TOPLEVEL += ptlctl
 endif
