@@ -68,6 +68,7 @@ public:
     }
     bool runOnModule(Module &M)
     {
+      return true;
       CreatePrintfDeclaration(M);
 
        Constant *zeros[] =
