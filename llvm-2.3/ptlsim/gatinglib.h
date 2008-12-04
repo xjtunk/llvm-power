@@ -4,13 +4,12 @@
 // copied from PTLSim
 #include <globals.h>
 #include <superstl.h>
-#include <stdio.h>
+
 
 
 typedef unsigned long long tick_t;
-typedef unsigned int mask_t;
+typedef unsigned long long mask_t;
 typedef double power_t;
-
 
 //#define DEBUG 1
 using namespace std;
@@ -153,13 +152,13 @@ public:
   void dumpFunctionalUnits();
   void dumpStats(const tick_t &now);
   bool functionalUnitAvailable(const unsigned long &unitNumber, const tick_t &now);
-  static FunctionalUnitManager* getFUM()
+ /* static FunctionalUnitManager* getFUM()
   {
 		static FunctionalUnitManager* FUM = new FunctionalUnitManager("fu.txt");
 		return FUM;  
   
   }
-  
+  */
 private:
   // The last clock that was synchronized
   tick_t globalClock;
@@ -185,5 +184,6 @@ private:
 };
 
 
+extern FunctionalUnitManager* FUM;
 
 #endif  /*__GATINGLIB_H__*/

@@ -6,7 +6,7 @@
 //
 
 #include <decode.h>
-
+#include <gatinglib.h>
 template <typename T> void assist_div(Context& ctx) {
   Waddr rax = ctx.commitarf[REG_rax]; Waddr rdx = ctx.commitarf[REG_rdx];
   asm("div %[divisor];" : "+a" (rax), "+d" (rdx) : [divisor] "q" ((T)ctx.commitarf[REG_ar1]));
@@ -100,6 +100,15 @@ void assist_hypercall(Context& ctx) {
   }
   handle_xen_hypercall_assist(ctx);
 #endif
+}
+
+void outputstuff(W64 value)
+{
+    cerr << "Power gating instruction encountered at cycle "<<sim_cycle<<"\n";
+  	cerr << "Value of bitstring is "<<hexstring(value,64)<<"\n";
+    cerr << "Breaking out of the decode\n", flush;
+//		cerr << "assist_sysenter()", endl, flush;
+
 }
 
 void assist_sysenter(Context& ctx) {
@@ -2343,12 +2352,23 @@ bool TraceDecoder::decode_complex() {
 
   // Ahmad added this...
   case 0x138: {
-///    logfile << "AHMAD: Power gating opcode encountered!\n";
+    logfile << "AHMAD: Power gating opcode encountered  "<<sim_cycle<<"\n";
 ///    logfile << ctx, endl, flush;
+		rip = ripstart + 10;
     EndOfDecode();
-    cerr << "Power gating instruction encountered!\n";
-    cerr << "Breaking out of the decode\n";
-    this << TransOp(OP_nop, REG_temp0, REG_zero, REG_zero, REG_zero, 3);
+    
+    //parse bistring
+    
+   // FunctionalUnitManager* FUM = FunctionalUnitManager::getFUM();
+	//	assert(FUM);
+		mask_t bitstring = *(mask_t*)(ripstart + 2);
+	//	
+		//FunctionalUnitManager::getFUM()->dumpStats(sim_cycle);
+		FUM->processAtIssue(bitstring, sim_cycle);
+		FUM->dumpStats(sim_cycle);
+		outputstuff(*(long long int*)(ripstart + 2));
+    this << TransOp(OP_nop, REG_temp0, REG_zero, REG_zero, REG_zero, 10);
+    
     end_of_block = 1;
     break;
   }
