@@ -352,7 +352,9 @@ bool PowerOpt::runOnMachineFunction(MachineFunction &MF) {
   // Ahmad's code starts here... Iterate over all basic blocks. Figure out
   // the power requirements of each basic block. Then insert a magic instruction
   // at the start of every basic block.
+  cout << "before return" << std::endl;
   return true;
+  cout << "after return" << std::endl;
   int numLoops;
   std::vector<MachineBasicBlock*> trace;
   TII = MF.getTarget().getInstrInfo();

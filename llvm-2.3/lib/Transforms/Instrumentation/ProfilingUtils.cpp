@@ -33,6 +33,11 @@ void llvm::InsertProfilingInitCall(Function *MainFn, const char *FnName, GlobalV
                                            ArgVTy, UIntPtr, Type::Int32Ty,
                                            (Type *)0);
 
+  //// Brooks
+  //// Attempting to register the function which dumps profiling data
+  ////
+  M.getOrInsertFunction("EdgeProfAtExitHandler", Type::VoidTy, (Type*)0);
+
   // This could force argc and argv into programs that wouldn't otherwise have
   // them, but instead we just pass null values in.
   std::vector<Value*> Args(4);
