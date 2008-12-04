@@ -6,6 +6,8 @@
 	case X86::INSERT_SUBREG:
 	case X86::IMPLICIT_DEF:
 	case X86::SUBREG_TO_REG:
+	case X86::ADJCALLSTACKDOWN:
+	case X86::ADJCALLSTACKUP:
 	case X86::ABS_F:
 	case X86::ABS_Fp32:
 	case X86::ABS_Fp64:
@@ -96,11 +98,6 @@
 		return turnOnFUT(1, FUT_FP_ADDER);
 		break;
 
-	case X86::ADJCALLSTACKDOWN:
-	case X86::ADJCALLSTACKUP:
-		return turnOnFUT(FUT_ALL);
-		break;
-
 	case X86::AND16mi:
 	case X86::AND16mi8:
 	case X86::AND16mr:
@@ -167,6 +164,53 @@
 	case X86::BSR64rr:
 	case X86::BSWAP32r:
 	case X86::BSWAP64r:
+	case X86::CBW:
+	case X86::CDQ:
+	case X86::CDQE:
+	case X86::CHS_F:
+	case X86::CHS_Fp32:
+	case X86::CHS_Fp64:
+	case X86::CHS_Fp80:
+	case X86::CLFLUSH:
+	case X86::COS_F:
+	case X86::COS_Fp32:
+	case X86::COS_Fp64:
+	case X86::COS_Fp80:
+	case X86::CQO:
+	case X86::CVTSD2SSrm:
+	case X86::CVTSD2SSrr:
+	case X86::CVTSI2SD64rm:
+	case X86::CVTSI2SD64rr:
+	case X86::CVTSI2SDrm:
+	case X86::CVTSI2SDrr:
+	case X86::CVTSI2SS64rm:
+	case X86::CVTSI2SS64rr:
+	case X86::CVTSI2SSrm:
+	case X86::CVTSI2SSrr:
+	case X86::CVTSS2SDrm:
+	case X86::CVTSS2SDrr:
+	case X86::CVTTSD2SI64rm:
+	case X86::CVTTSD2SI64rr:
+	case X86::CVTTSD2SIrm:
+	case X86::CVTTSD2SIrr:
+	case X86::CVTTSS2SI64rm:
+	case X86::CVTTSS2SI64rr:
+	case X86::CVTTSS2SIrm:
+	case X86::CVTTSS2SIrr:
+	case X86::CWD:
+	case X86::CWDE:
+	case X86::DEC16m:
+	case X86::DEC16r:
+	case X86::DEC32m:
+	case X86::DEC32r:
+	case X86::DEC64_16m:
+	case X86::DEC64_16r:
+	case X86::DEC64_32m:
+	case X86::DEC64_32r:
+	case X86::DEC64m:
+	case X86::DEC64r:
+	case X86::DEC8m:
+	case X86::DEC8r:
 		return turnOnFUT(FUT_ALL);
 		break;
 
@@ -177,17 +221,6 @@
 	case X86::CALL64r:
 	case X86::CALLpcrel32:
 		return turnOnFUT(1, FUT_INT_AGU);
-		break;
-
-	case X86::CBW:
-	case X86::CDQ:
-	case X86::CDQE:
-	case X86::CHS_F:
-	case X86::CHS_Fp32:
-	case X86::CHS_Fp64:
-	case X86::CHS_Fp80:
-	case X86::CLFLUSH:
-		return turnOnFUT(FUT_ALL);
 		break;
 
 	case X86::CMOVA16rm:
@@ -351,45 +384,6 @@
 		return turnOnFUT(1, FUT_CMP);
 		break;
 
-	case X86::COS_F:
-	case X86::COS_Fp32:
-	case X86::COS_Fp64:
-	case X86::COS_Fp80:
-	case X86::CQO:
-	case X86::CVTSD2SSrm:
-	case X86::CVTSD2SSrr:
-	case X86::CVTSI2SD64rm:
-	case X86::CVTSI2SD64rr:
-	case X86::CVTSI2SDrm:
-	case X86::CVTSI2SDrr:
-	case X86::CVTSI2SS64rm:
-	case X86::CVTSI2SS64rr:
-	case X86::CVTSI2SSrm:
-	case X86::CVTSI2SSrr:
-	case X86::CVTSS2SDrm:
-	case X86::CVTSS2SDrr:
-	case X86::CVTTSD2SI64rm:
-	case X86::CVTTSD2SI64rr:
-	case X86::CVTTSD2SIrm:
-	case X86::CVTTSD2SIrr:
-	case X86::CVTTSS2SI64rm:
-	case X86::CVTTSS2SI64rr:
-	case X86::CVTTSS2SIrm:
-	case X86::CVTTSS2SIrr:
-	case X86::CWD:
-	case X86::CWDE:
-	case X86::DEC16m:
-	case X86::DEC16r:
-	case X86::DEC32m:
-	case X86::DEC32r:
-	case X86::DEC64_16m:
-	case X86::DEC64_16r:
-	case X86::DEC64_32m:
-	case X86::DEC64_32r:
-	case X86::DEC64m:
-	case X86::DEC64r:
-	case X86::DEC8m:
-	case X86::DEC8r:
 	case X86::DIV16m:
 	case X86::DIV16r:
 	case X86::DIV32m:
@@ -449,6 +443,9 @@
 	case X86::DIV_FpI32m64:
 	case X86::DIV_FpI32m80:
 	case X86::DIV_FrST0:
+		return turnOnFUT(1, FUT_FP_DIV);
+		break;
+
 	case X86::DPPDrmi:
 	case X86::DPPDrri:
 	case X86::DPPSrmi:
@@ -460,6 +457,9 @@
 	case X86::FLDCW16m:
 	case X86::FNSTCW16m:
 	case X86::FNSTSW8r:
+		return turnOnFUT(FUT_ALL);
+		break;
+
 	case X86::FP32_TO_INT16_IN_MEM:
 	case X86::FP32_TO_INT32_IN_MEM:
 	case X86::FP32_TO_INT64_IN_MEM:
@@ -479,6 +479,16 @@
 	case X86::FpSET_ST0_32:
 	case X86::FpSET_ST0_64:
 	case X86::FpSET_ST0_80:
+		return turnOnFUT(2, FUT_INT_ADDER_ARITH, FUT_LOAD, FUT_STORE);
+		break;
+
+	case X86::FsMOVAPDrm:
+	case X86::FsMOVAPDrr:
+	case X86::FsMOVAPSrm:
+	case X86::FsMOVAPSrr:
+		return turnOnFUT(1, FUT_MOVER);
+		break;
+
 	case X86::FsANDNPDrm:
 	case X86::FsANDNPDrr:
 	case X86::FsANDNPSrm:
@@ -487,12 +497,6 @@
 	case X86::FsANDPDrr:
 	case X86::FsANDPSrm:
 	case X86::FsANDPSrr:
-	case X86::FsFLD0SD:
-	case X86::FsFLD0SS:
-	case X86::FsMOVAPDrm:
-	case X86::FsMOVAPDrr:
-	case X86::FsMOVAPSrm:
-	case X86::FsMOVAPSrr:
 	case X86::FsORPDrm:
 	case X86::FsORPDrr:
 	case X86::FsORPSrm:
@@ -501,6 +505,9 @@
 	case X86::FsXORPDrr:
 	case X86::FsXORPSrm:
 	case X86::FsXORPSrr:
+		return turnOnFUT(1, FUT_INT_ADDER_LOGIC);
+		break;
+
 	case X86::HADDPDrm:
 	case X86::HADDPDrr:
 	case X86::HADDPSrm:
@@ -509,6 +516,9 @@
 	case X86::HSUBPDrr:
 	case X86::HSUBPSrm:
 	case X86::HSUBPSrr:
+		return turnOnFUT(1, FUT_INT_ADDER_ARITH);
+		break;
+
 	case X86::IDIV16m:
 	case X86::IDIV16r:
 	case X86::IDIV32m:
@@ -517,6 +527,11 @@
 	case X86::IDIV64r:
 	case X86::IDIV8m:
 	case X86::IDIV8r:
+		return turnOnFUT(1, FUT_INT_DIV);
+		break;
+
+	case X86::FsFLD0SD:
+	case X86::FsFLD0SS:
 	case X86::ILD_F16m:
 	case X86::ILD_F32m:
 	case X86::ILD_F64m:
@@ -529,6 +544,9 @@
 	case X86::ILD_Fp64m32:
 	case X86::ILD_Fp64m64:
 	case X86::ILD_Fp64m80:
+		return turnOnFUT(1, FUT_LOAD);
+		break;
+
 	case X86::IMUL16m:
 	case X86::IMUL16r:
 	case X86::IMUL16rm:
@@ -555,6 +573,9 @@
 	case X86::IMUL64rri8:
 	case X86::IMUL8m:
 	case X86::IMUL8r:
+		return turnOnFUT(1, FUT_INT_MULTIPLIER);
+		break;
+
 	case X86::IN16ri:
 	case X86::IN16rr:
 	case X86::IN32ri:

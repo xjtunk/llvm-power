@@ -15,6 +15,7 @@ namespace llvm
     FUT_INT_ADDER_LOGIC,
     FUT_INT_SHIFTER,
     FUT_INT_MULTIPLIER,
+    FUT_INT_DIV,
     FUT_INT_AGU, // Address generation unit. Might be merged with adder
 	FUT_BRANCH,
 	FUT_MOVER,
@@ -23,11 +24,12 @@ namespace llvm
 	FUT_CMP,
     FUT_FP_ADDER,
     FUT_FP_MULTIPLIER,
+    FUT_FP_DIV,
     FUT_FP_MADD,
     FUT_FP_SQRT,
 	FUT_FP_ANDOR,
-    FUT_LD_QUEUE,
-    FUT_ST_QUEUE,
+    FUT_LOAD,
+    FUT_STORE,
     FUT_L1_DCACHE,
     FUT_L2_UCACHE
   };
