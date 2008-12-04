@@ -64,10 +64,10 @@ namespace {
 }
 #endif
 
-class ReturnToJITPass: public ModulePass
+class ReturnToJITPass: public FunctionPass
 {
 public:
-    ReturnToJITPass() : ModulePass((intptr_t) & ID)
+    ReturnToJITPass() : FunctionPass((intptr_t) & ID)
     {
     }
 
@@ -186,6 +186,13 @@ public:
         BranchInst :: Create(old_entry, hot_block);
 #endif
     }
+    bool runOnFunction(Function &f)
+    {
+      LoopInfo * LI;
+      LI = &getAnalysis<LoopInfo>();
+      return true;
+    }
+#if 0
     bool runOnModule(Module &M)
     {
       for (Module::iterator f = M.begin(); f != M.end(); ++f)
@@ -212,9 +219,7 @@ public:
       //cout << M;
       return true;
   }
-  void AddTrampoline(BasicBlock * BB, int threshold) {
-	  //hi
-  }
+#endif
   static char ID;
 };
 char ReturnToJITPass::ID = 0;
@@ -284,7 +289,7 @@ void OptimizeFunction(JIT *jit, Function *f)
 }
 
 
-ModulePass *llvm::createReturnToJITPass()
+FunctionPass *llvm::createReturnToJITPass()
 {
   return new ReturnToJITPass();
 ///  return NULL;

@@ -33,7 +33,7 @@ ModulePass* createNullProfilerRSPass();
 FunctionPass* createRSProfilingPass();
 
 // ahmad added
-ModulePass* createReturnToJITPass();
+FunctionPass* createReturnToJITPass();
 
 } // End llvm namespace
 
