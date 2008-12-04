@@ -4,7 +4,7 @@
 //
 // Copyright 2000-2008 Matt T. Yourst <yourst@yourst.com>
 //
-
+#include <gatinglib.h>
 #include <globals.h>
 #include <superstl.h>
 #include <mm.h>
@@ -1646,7 +1646,10 @@ int ptlsim_inject(int argc, char** argv) {
 
   // (child done)
   status = WEXITSTATUS(status);
+
   if (DEBUG) cerr << "ptlsim: exiting with exit code ", status, endl, flush;
+  
+
   return WEXITSTATUS(status);
 }
 
@@ -1835,6 +1838,8 @@ int ptlsim_inject(int argc, char** argv) {
 
   // (child done)
   status = WEXITSTATUS(status);
+
+  
   if (DEBUG) cerr << "ptlsim: exiting with exit code ", status, endl, flush;
   return WEXITSTATUS(status);
 }
@@ -2248,17 +2253,17 @@ void user_process_terminated(int rc) {
   sys_exit(rc);
 }
 
+
 //
 // Main simulation driver function
 //
 void switch_to_sim() {
   static const bool DEBUG = 0;
-
+		
   logfile << "Baseline state:", endl;
   logfile << ctx;
 
   Waddr origrip = (Waddr)ctx.commitarf[REG_rip];
-
   bool done = false;
 
   //
@@ -2340,6 +2345,7 @@ int main(int argc, char** argv) {
   init_config(argc, argv);
   init_signal_callback();
   CycleTimer::gethz();
+		
 
   if (config.pause_at_startup) {
     logfile << "ptlsim: Paused for ", config.pause_at_startup, " seconds; attach debugger to PID ", sys_getpid(), " now...", endl, flush;
@@ -2359,7 +2365,7 @@ int main(int argc, char** argv) {
   void* program_entry = (void*)(Waddr)find_auxv_entry(AT_ENTRY)->a_un.a_val;
 
   logfile << "loader: interp_entry ", interp_entry, ", program_entry ", program_entry, endl, flush;
-
+	
   if (!config.trigger_mode) {
     if (config.start_at_rip != INVALIDRIP)
       set_switch_to_sim_breakpoint((void*)(Waddr)config.start_at_rip);

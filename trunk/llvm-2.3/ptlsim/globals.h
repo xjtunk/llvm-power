@@ -9,9 +9,14 @@
 #ifndef _GLOBALS_H_
 #define _GLOBALS_H_
 
+
+
 extern "C" {
 #include <sys/ptrace.h>
 }
+
+
+
 
 typedef __SIZE_TYPE__ size_t;
 typedef unsigned long long W64;

@@ -1,5 +1,5 @@
 #include  <gatinglib.h>
-#include <cassert>
+//#include <cassert>
 
 // Useful functions for converting a bitmask into individual functional unit indices.
 #define LOG2(x) (ffs(x)-1)
@@ -8,12 +8,13 @@
 // Because we are trying to model unlimited precision using limited number of bits.
 #define EPSILON 1e-5
 
-extern FunctionalUnitManager FUM;
 
-void FunctionalUnitManager::processAtIssue(const unsigned int &mask, const tick_t &now)
+
+void FunctionalUnitManager::processAtIssue(const mask_t &mask, const tick_t &now)
 {
 	int i;
-	unsigned int _mask = mask; 
+	mask_t _mask = mask; 
+  cerr << "Going where i think i should"<<endl;
 	for(i = 0; i < functionalUnits.size(); i++)
 	{
 		if(_mask & 0x1)
@@ -27,10 +28,10 @@ void FunctionalUnitManager::processAtIssue(const unsigned int &mask, const tick_
 
 }
 
-void FunctionalUnitManager::processAtCommit(const unsigned int &mask, const tick_t &now)
+void FunctionalUnitManager::processAtCommit(const mask_t &mask, const tick_t &now)
 {
 	int i;
-	unsigned int _mask = mask;
+	mask_t _mask = mask;
 	for(i = 0; i < functionalUnits.size(); i++)
 	{
 		if(_mask & 0x1)
@@ -49,7 +50,7 @@ void FunctionalUnitManager::processAtCommit(const unsigned int &mask, const tick
 	}
 }
 
-void FunctionalUnitManager::processAtFlush(const unsigned int &mask, const tick_t &now)
+void FunctionalUnitManager::processAtFlush(const mask_t &mask, const tick_t &now)
 {
 
 
@@ -337,8 +338,10 @@ int FunctionalUnitManager::readFunctionalUnitFile(const char * filename)
 
   infile.open(filename);
   if(!infile)
+  {
+  	cerr<<"Error reading file!"<<endl;
     return -1;
-
+	}
   while(infile.size()!=infile.where())
   {
     sb.reset();

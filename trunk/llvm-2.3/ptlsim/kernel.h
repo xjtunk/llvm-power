@@ -12,12 +12,13 @@
 #include <globals.h>
 #include <ptlhwdef.h>
 #include <elf.h>
-
+#include <gatinglib.h>
 struct PTLsimConfig;
 
 extern PTLsimConfig config;
 
 extern ConfigurationParser<PTLsimConfig> configparser;
+
 
 //
 // Thread local storage

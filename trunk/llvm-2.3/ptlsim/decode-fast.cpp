@@ -10,7 +10,7 @@
 bool TraceDecoder::decode_fast() {
   DecodedOperand rd;
   DecodedOperand ra;
-
+//cerr<<"Opcode = "<<op<<endl;
   switch (op) {
   case 0x00 ... 0x0e:
   case 0x10 ... 0x3f: {
@@ -850,6 +850,7 @@ bool TraceDecoder::decode_fast() {
     this << TransOp(OP_bswap, rdreg, (sizeshift >= 2) ? REG_zero : rdreg, rdreg, REG_zero, sizeshift);
     break;
   }
+
 
   default: {
     // Let the slow decoder handle it or mark it invalid

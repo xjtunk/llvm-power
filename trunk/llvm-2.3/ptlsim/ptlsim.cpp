@@ -541,10 +541,12 @@ void update_progress() {
     config.snapshot_now.reset();
   }
 }
-
+FunctionalUnitManager* FUM;
 bool simulate(const char* machinename) {
   PTLsimMachine* machine = PTLsimMachine::getmachine(machinename);
-
+	cerr << "Building FUM" ,endl, flush;
+	FUM = new FunctionalUnitManager("fu.txt");
+	cerr << "Completed Building FUM", endl, flush;
   if (!machine) {
     logfile << "Cannot find core named '", machinename, "'", endl;
     cerr << "Cannot find core named '", machinename, "'", endl;

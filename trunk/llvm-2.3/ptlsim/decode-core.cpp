@@ -1868,7 +1868,9 @@ bool TraceDecoder::translate() {
   bool need_modrm = onebyte_has_modrm[op];
   if (op == 0x0f) {
     op = fetch1();
+//		logfile << "0f encountered = ",op,endl;
     need_modrm = twobyte_has_modrm[op];
+
 
     if (twobyte_uses_SSE_prefix[op]) {
       uses_sse = 1;
@@ -1895,7 +1897,7 @@ bool TraceDecoder::translate() {
 
   bool rc;
 
-  // logfile << "Decoding op 0x", hexstring(op, 12), " (class ", (op >> 8), ") @ ", (void*)ripstart, endl;
+  //cerr << "Decoding op 0x", hexstring(op, 12), " (class ", (op >> 8), ") @ ", (void*)ripstart, endl;
 
   is_x87 = 0;
   is_sse = 0;

@@ -1056,6 +1056,7 @@ bool ThreadContext::handle_exception() {
   assert(false);
   return false;
 #endif
+
 }
 
 bool ThreadContext::handle_interrupt() {
