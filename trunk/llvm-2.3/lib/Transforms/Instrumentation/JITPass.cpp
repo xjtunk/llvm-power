@@ -34,13 +34,25 @@ reads and runs additional passes on the function.
 using namespace std;
 using namespace llvm;
 
-
 queue <string> *g_hot_messages;
 sys :: Mutex *g_jit_lock;
 
+//// At this point, we've identified that this function/loop is hot
+//// we need to dump the profile data so that it can be used by the optimizer
+////
 void InsertMessage(Function *F)
 {
+
   printf("Back into the runtime: %s\n", F->getName().c_str());
+
+  Module * M = F->getParent();
+  Constant *InitFn = M->getOrInsertFunction("EdgeProfAtExitHandler", Type::VoidTy, (Type*)0);
+  printf("Is initfn valid? %d\n", InitFn==0?0:1);
+
+  // cast initfn to a function pointer that takes in the parameters it takes in
+  ((void)(*InitFn))(void);
+
+
 ///  MutexGuard locked(*g_jit_lock);
 ///  g_hot_messages->push(m);
 }
@@ -73,7 +85,6 @@ public:
 
     virtual void getAnalysisUsage(AnalysisUsage &AU) const {
       // added for loop info
-	  cout << "I AM REQUIRED!" << std::endl;
       AU.addRequired<LoopInfo>(); // where does AU come from?
     }
 
