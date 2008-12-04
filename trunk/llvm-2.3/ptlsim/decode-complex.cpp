@@ -1685,7 +1685,7 @@ bool TraceDecoder::decode_complex() {
     // (nop)
     // NOTE! We still have to output something so %rip gets incremented correctly!
     EndOfDecode();
-    this << TransOp(OP_nop, REG_temp0, REG_zero, REG_zero, REG_zero, 3);
+    this << TransOp(OP_nop, REG_temp0, REG_zero, REG_zero, REG_zero, sizeof(long)+2);
     break;
   }
 
@@ -2347,8 +2347,8 @@ bool TraceDecoder::decode_complex() {
 ///    logfile << ctx, endl, flush;
     EndOfDecode();
     cerr << "Power gating instruction encountered!\n";
-    MakeInvalid();
     cerr << "Breaking out of the decode\n";
+    this << TransOp(OP_nop, REG_temp0, REG_zero, REG_zero, REG_zero, 3);
     end_of_block = 1;
     break;
   }
