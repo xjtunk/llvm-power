@@ -14,18 +14,24 @@ void FunctionalUnitManager::processAtIssue(const mask_t &mask, const tick_t &now
 {
 	int i;
 	mask_t _mask = mask; 
-  cerr << "Going where i think i should"<<endl;
 	for(i = 0; i < functionalUnits.size(); i++)
 	{
+	
 		if(_mask & 0x1)
 		{
+			cerr<<"Turning on functional unit "<<functionalUnits[i]->getName()<<endl;
 			functionalUnits[i]->turnOn(now);	
-			functionalUnits[i]->updateInPipeline(); //indicate that a turnon has been dispatched but not commited
+		//	functionalUnits[i]->updateInPipeline(); //indicate that a turnon has been dispatched but not commited
 		}
-
+		else
+		{
+			cerr<<"Turning off functional unit "<<functionalUnits[i]->getName()<<endl;
+			functionalUnits[i]->turnOff(now);
+		}
 		_mask >>= 1;
 	}
-
+	
+	
 }
 
 void FunctionalUnitManager::processAtCommit(const mask_t &mask, const tick_t &now)
@@ -295,6 +301,7 @@ void FunctionalUnit::synchronize(const tick_t &now)
 
 FunctionalUnitManager::FunctionalUnitManager(const char * filename)
 	{
+	/*
 		if(!readFunctionalUnitFile(filename))
 		{
 			globalClock = 0;
@@ -302,7 +309,12 @@ FunctionalUnitManager::FunctionalUnitManager(const char * filename)
 		}
 		else
 			cerr<<"Error reading file "<<filename<<endl;
-	
+	*/
+	functionalUnits.resize(2);
+	functionalUnits[0] = new FunctionalUnit("adder", 22, 11, 5);
+	functionalUnits[1] = new FunctionalUnit("mul", 55 ,33, 4);
+
+
 	}
 void FunctionalUnitManager::synchronize(const tick_t &now)
 {
