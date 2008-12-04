@@ -73,6 +73,7 @@ public:
 
     virtual void getAnalysisUsage(AnalysisUsage &AU) const {
       // added for loop info
+	  cout << "I AM REQUIRED!" << std::endl;
       AU.addRequired<LoopInfo>(); // where does AU come from?
     }
 
@@ -144,8 +145,7 @@ public:
         parameter_types.push_back(PointerType::get(Type::Int32Ty, 0));
         C=ConstantExpr::getIntToPtr(C, parameter_types[0]);
         args.push_back(C);
-        breakfn=ConstantExpr::getIntToPtr(ConstantInt::get(Type::Int32Ty, (uint32_t)InsertMessage),
-            PointerType::get(FunctionType::get(Type::VoidTy, parameter_types, false), 0));
+        //breakfn=ConstantExpr::getIntToPtr(ConstantInt::get(Type::Int32Ty, (uint32_t)InsertMessage), PointerType::get(FunctionType::get(Type::VoidTy, parameter_types, false), 0));
       }
       else
       {
@@ -186,41 +186,39 @@ public:
         BranchInst :: Create(old_entry, hot_block);
 #endif
     }
-    bool runOnFunction(Function &f)
-    {
-      LoopInfo * LI;
-      LI = &getAnalysis<LoopInfo>();
-      return true;
-    }
-#if 0
-    bool runOnModule(Module &M)
-    {
-      for (Module::iterator f = M.begin(); f != M.end(); ++f)
-      {
-        if (f->isDeclaration())
-          continue;
+	bool runOnFunction(Function &f)
+	{
+		if (f.isDeclaration()) {
+			return true;
+		}
 
-        BasicBlock *old_entry = f->begin();
+		//// Brooks
+		//// Get the loop info 
+		////
+		LoopInfo * LI;
+		LI = &getAnalysis<LoopInfo>();
 
 		//// Brooks
 		//// Call Ahmad's routine at the beginning of each function
+		////
+		BasicBlock *old_entry = f.begin();
 		AddTrampoline(old_entry, 10/*threshold*/);
 
 		//// Brooks
 		//// Also, call Ahmad's routine at the beginning of each loop in the function
-		LoopInfo * LI; 
-		LI = &getAnalysis<LoopInfo>(); // does this work? (if not, try LoopInfo::getAnalysis
-		for (LoopInfo::iterator lii = LI->begin(), liend = LI->end(); lii != liend; ++lii) {
+		////
+		for (LoopInfo::iterator lii = LI->begin(), liend = LI->end(); lii != liend; ++lii) 
+		{
 			Loop * currloop = *lii;
-			AddTrampoline(currloop->getHeader(), 10/*threshold*/);
+			BasicBlock * loopheader = currloop->getHeader();
+			if (loopheader == old_entry) continue;
+			AddTrampoline(loopheader, 10/*threshold*/);
 		}
 
-      }
-      //cout << M;
-      return true;
-  }
-#endif
-  static char ID;
+		//cout << M;
+		return true;
+	}
+	static char ID;
 };
 char ReturnToJITPass::ID = 0;
 RegisterPass<ReturnToJITPass>
@@ -289,7 +287,7 @@ void OptimizeFunction(JIT *jit, Function *f)
 }
 
 
-FunctionPass *llvm::createReturnToJITPass()
+FunctionPass * llvm::createReturnToJITPass()
 {
   return new ReturnToJITPass();
 ///  return NULL;
