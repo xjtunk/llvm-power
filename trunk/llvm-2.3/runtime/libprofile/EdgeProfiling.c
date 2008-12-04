@@ -55,7 +55,6 @@ int llvm_start_edge_profiling(int argc, const char **argv,
   // Brooks
   // Added signal handler for ALARM to do timer interrupts
   // They trigger the edge profiler to run
-  atexit(EdgeProfAtExitHandler);
 #if 0
   sigemptyset(&signalaction.sa_mask);
   signalaction.sa_flags = SA_RESTART;
@@ -63,6 +62,7 @@ int llvm_start_edge_profiling(int argc, const char **argv,
   sigaction(SIGALRM, &signalaction, NULL);
   alarm(1);
 #endif
+  atexit(EdgeProfAtExitHandler);
   return Ret;
 }
 
