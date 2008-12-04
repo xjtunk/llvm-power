@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 void break_fn(W64 mask)
 {
 ///  asm(".byte 0x0f; .byte 0x3f; .long 0x77777777;");
-  GATE_INSTR(43,34);
+  GATE_INSTR(0,0);
 ///  asm("movl %ecx, %eax");
-	GATE_INSTR(27,72);
+	GATE_INSTR(0xFF,0xFF);
 }

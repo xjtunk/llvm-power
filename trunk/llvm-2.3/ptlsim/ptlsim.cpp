@@ -545,7 +545,7 @@ FunctionalUnitManager* FUM;
 bool simulate(const char* machinename) {
   PTLsimMachine* machine = PTLsimMachine::getmachine(machinename);
 	cerr << "Building FUM" ,endl, flush;
-	FUM = new FunctionalUnitManager("fu.txt");
+	FUM = new FunctionalUnitManager("/net/hp95/uarch/users/jkron3/llvm-power/llvm-2.3/ptlsim/fu.txt");
 	cerr << "Completed Building FUM", endl, flush;
   if (!machine) {
     logfile << "Cannot find core named '", machinename, "'", endl;
