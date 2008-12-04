@@ -141,16 +141,22 @@ public:
       if(sizeof(void*)==4)
       {
         // 32-bit machine.
+#ifndef __x86_64__
         C=ConstantInt::get(Type::Int32Ty, (int)(intptr_t)f);
         parameter_types.push_back(PointerType::get(Type::Int32Ty, 0));
         C=ConstantExpr::getIntToPtr(C, parameter_types[0]);
         args.push_back(C);
-        //breakfn=ConstantExpr::getIntToPtr(ConstantInt::get(Type::Int32Ty, (uint32_t)InsertMessage), PointerType::get(FunctionType::get(Type::VoidTy, parameter_types, false), 0));
+        breakfn=ConstantExpr::getIntToPtr(ConstantInt::get(Type::Int32Ty, (uint32_t)InsertMessage), PointerType::get(FunctionType::get(Type::VoidTy, parameter_types, false), 0));
+#endif
       }
       else
       {
         // 64-bit machine.
-        assert(0);
+        C=ConstantInt::get(Type::Int64Ty, (int)(intptr_t)f);
+        parameter_types.push_back(PointerType::get(Type::Int64Ty, 0));
+        C=ConstantExpr::getIntToPtr(C, parameter_types[0]);
+        args.push_back(C);
+        breakfn=ConstantExpr::getIntToPtr(ConstantInt::get(Type::Int64Ty, (uint64_t)InsertMessage), PointerType::get(FunctionType::get(Type::VoidTy, parameter_types, false), 0));
       }
       CallInst::Create(breakfn, args.begin(), args.end(), "", breakBB);
       BranchInst::Create(bb, breakBB);
