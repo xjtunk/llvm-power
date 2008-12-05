@@ -28,4 +28,8 @@ int save_arguments(int argc, const char **argv);
 void write_profiling_data(enum ProfilingType PT, unsigned *Start,
                           unsigned NumElements);
 
+//// Brooks
+////
+void EdgeProfAtExitHandler();
+
 #endif

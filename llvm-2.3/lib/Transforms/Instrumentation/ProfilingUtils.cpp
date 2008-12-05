@@ -36,7 +36,7 @@ void llvm::InsertProfilingInitCall(Function *MainFn, const char *FnName, GlobalV
   //// Brooks
   //// Attempting to register the function which dumps profiling data
   ////
-  M.getOrInsertFunction("EdgeProfAtExitHandler", Type::VoidTy, (Type*)0);
+  //M.getOrInsertFunction("EdgeProfAtExitHandler", Type::VoidTy, (Type*)0); // i don't think this is the right way to do this...
 
   // This could force argc and argv into programs that wouldn't otherwise have
   // them, but instead we just pass null values in.

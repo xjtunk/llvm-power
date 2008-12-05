@@ -21,12 +21,13 @@
 
 static unsigned *ArrayStart;
 static unsigned NumElements;
+struct sigaction signalaction;
 
 
 /* EdgeProfAtExitHandler - When the program exits, just write out the profiling
  * data.
  */
-static void EdgeProfAtExitHandler() {
+void EdgeProfAtExitHandler() {
   /* Note that if this were doing something more intelligent with the
    * instrumentation, we could do some computation here to expand what we
    * collected into simple edge profiles.  Since we directly count each edge, we
@@ -37,7 +38,6 @@ static void EdgeProfAtExitHandler() {
 
 // Added by Brooks
 // Function to handle timer interrupts
-struct sigaction signalaction;
 void handleSIGALRM(int arg) {
   printf("Handling SIGALRM\n");
   EdgeProfAtExitHandler();	
@@ -52,17 +52,17 @@ int llvm_start_edge_profiling(int argc, const char **argv,
   int Ret = save_arguments(argc, argv);
   ArrayStart = arrayStart;
   NumElements = numElements;
+  atexit(EdgeProfAtExitHandler);
+#if 0
   // Brooks
   // Added signal handler for ALARM to do timer interrupts
   // They trigger the edge profiler to run
-#if 0
   sigemptyset(&signalaction.sa_mask);
   signalaction.sa_flags = SA_RESTART;
   signalaction.sa_handler = &handleSIGALRM;
   sigaction(SIGALRM, &signalaction, NULL);
   alarm(1);
 #endif
-  atexit(EdgeProfAtExitHandler);
   return Ret;
 }
 
