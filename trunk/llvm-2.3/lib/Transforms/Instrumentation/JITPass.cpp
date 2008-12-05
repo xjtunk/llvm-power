@@ -30,6 +30,7 @@ reads and runs additional passes on the function.
 //// Brooks
 //// including loopinfo.h to use the iterator for loops
 #include "llvm/Analysis/LoopInfo.h"
+#include "../../../runtime/libprofile/Profiling.h"
 
 using namespace std;
 using namespace llvm;
@@ -42,15 +43,17 @@ sys :: Mutex *g_jit_lock;
 ////
 void InsertMessage(Function *F)
 {
-
   printf("Back into the runtime: %s\n", F->getName().c_str());
 
+  EdgeProfAtExitHandler();
+
+#if 0 // i dont think this is the right way to do this...
   Module * M = F->getParent();
   Constant *InitFn = M->getOrInsertFunction("EdgeProfAtExitHandler", Type::VoidTy, (Type*)0);
   printf("Is initfn valid? %d\n", InitFn==0?0:1);
-
   // cast initfn to a function pointer that takes in the parameters it takes in
   ((void)(*InitFn))(void);
+#endif
 
 
 ///  MutexGuard locked(*g_jit_lock);
