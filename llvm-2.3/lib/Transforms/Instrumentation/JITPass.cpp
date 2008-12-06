@@ -41,12 +41,12 @@ sys :: Mutex *g_jit_lock;
 //// At this point, we've identified that this function/loop is hot
 //// we need to dump the profile data so that it can be used by the optimizer
 ////
-extern void EdgeProfAtExitHandler();
+///extern void EdgeProfAtExitHandler();
 void InsertMessage(Function *F)
 {
   printf("Back into the runtime: %s\n", F->getName().c_str());
 
-  EdgeProfAtExitHandler();
+///  EdgeProfAtExitHandler();
 
 #if 0 // i dont think this is the right way to do this...
   Module * M = F->getParent();
