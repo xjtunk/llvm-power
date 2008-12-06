@@ -150,6 +150,7 @@ int main(int argc, char **argv, char * const *envp) {
 #else
   PM.add(createEdgeProfilerPass());
   // Create a return to JIT pass and run it.
+  PM.add(createEdgeProfilerPass());
   PM.add(createReturnToJITPass());
   PM.run(*Mod);
 #endif

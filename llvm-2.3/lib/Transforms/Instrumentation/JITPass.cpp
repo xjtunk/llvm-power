@@ -41,6 +41,7 @@ sys :: Mutex *g_jit_lock;
 //// At this point, we've identified that this function/loop is hot
 //// we need to dump the profile data so that it can be used by the optimizer
 ////
+extern void EdgeProfAtExitHandler();
 void InsertMessage(Function *F)
 {
   printf("Back into the runtime: %s\n", F->getName().c_str());
@@ -49,12 +50,15 @@ void InsertMessage(Function *F)
 
 #if 0 // i dont think this is the right way to do this...
   Module * M = F->getParent();
-  Constant *InitFn = M->getOrInsertFunction("EdgeProfAtExitHandler", Type::VoidTy, (Type*)0);
-  printf("Is initfn valid? %d\n", InitFn==0?0:1);
+///  Constant *InitFn = M->getOrInsertFunction("EdgeProfAtExitHandler", Type::VoidTy, (Type*)0);
+///  printf("Function: %p\n", InitFn);
   // cast initfn to a function pointer that takes in the parameters it takes in
-  ((void)(*InitFn))(void);
+///  typedef void (*func_t)(void);
 #endif
 
+///  func_t foo=(func_t)InitFn;
+///  foo();
+///  EdgeProfAtExitHandler();
 
 ///  MutexGuard locked(*g_jit_lock);
 ///  g_hot_messages->push(m);
@@ -105,13 +109,67 @@ public:
       Constant * one=ConstantInt::get(Type::Int32Ty, 1);
       Constant * zero=ConstantInt::get(Type::Int32Ty, 0);
       Constant *hot_threshold = ConstantInt :: get(Type :: Int32Ty, threshold);
-      BasicBlock * newEntry=BasicBlock::Create("new_entry", f, bb);
+
+      // split the basic block instead of creating a new one.
+#if 0
+      BasicBlock * newEntry=SplitBlock(bb, bb->getTerminator(), this);
+      bb->getInstList().erase(bb->getTerminator());
+      cout<<"New entry's instruction list size: "<<newEntry->getInstList().size()<<endl;
+
+#endif
+
+#if 1
+      BasicBlock * newEntry;
+      if(pred_begin(bb)!=pred_end(bb))
+      {
+#if 0
+        vector<BasicBlock*> preds;
+        for( pred_iterator PI=pred_begin(bb) ; PI!=pred_end(bb) ; PI++ )
+        {
+          preds.push_back(*PI);
+        }
+        assert(preds.size());
+        newEntry=SplitBlockPredecessors(bb, &preds[0], preds.size(), ".newEntry", this);
+        assert(newEntry);
+#endif
+        newEntry=SplitBlock(bb, bb->begin(), this);
+
+        BasicBlock * temp;
+        temp=newEntry;
+        newEntry=bb;
+        bb=temp;
+
+        newEntry->getInstList().erase(newEntry->getTerminator());
+///        cout<<"SPLIT BASIC BLOCK"<<endl;
+      }
+      else
+      {
+///        cout<<"CREATING NEW BLOCK"<<endl;
+        newEntry=BasicBlock::Create("new_entry", f, bb);
+      }
+#endif
+
+      // This is the old code.
+///      BasicBlock * newEntry=BasicBlock::Create("new_entry", f, bb);
+
       Value *counter=new GlobalVariable(zero->getType(), false, GlobalValue::InternalLinkage, hot_threshold, f->getName()+"_execution_count", M);
       Value * result=BinaryOperator::createSub(new LoadInst(counter, "",newEntry), one, "", newEntry);
       new StoreInst(result, counter, newEntry);
       trampolineBB=CreateBreakBB(bb, (void*)InsertMessage, (void*)bb->getParent());
       assert(trampolineBB);
       BranchInst::Create(trampolineBB, bb, new ICmpInst(ICmpInst::ICMP_EQ, result, zero, "", newEntry), newEntry);
+      assert(newEntry->getTerminator());
+      assert(bb->getTerminator());
+
+#if 0
+      int i=0;
+      assert(pred_begin(bb)!=pred_end(bb));
+      for( pred_iterator PI=pred_begin(bb) ; PI!=pred_end(bb) ; PI++ )
+      {
+        cout<<"pred number: "<<i<<endl;
+        i++;
+      }
+#endif
 
 #if 0
         BasicBlock *old_entry = f->begin(),
@@ -233,6 +291,7 @@ public:
 			BasicBlock * loopheader = currloop->getHeader();
 			if (loopheader == old_entry) continue;
 			AddTrampoline(loopheader, 10/*threshold*/);
+                        cout<<"Adding trampoline to loop"<<loopheader->getName()<<endl;
 		}
 
 		//cout << M;
