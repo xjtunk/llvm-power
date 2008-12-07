@@ -32,4 +32,6 @@ void write_profiling_data(enum ProfilingType PT, unsigned *Start,
 ////
 void EdgeProfAtExitHandler();
 
+void TestFunction();
+
 #endif

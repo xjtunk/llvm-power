@@ -73,7 +73,6 @@ bool DynamicLibrary::LoadLibraryPermanently(const char *Filename,
 
 void* DynamicLibrary::SearchForAddressOfSymbol(const char* symbolName) {
   //  check_ltdl_initialization();
-
   // First check symbols added via AddSymbol().
   std::map<std::string, void *>::iterator I = g_symbols.find(symbolName);
   if (I != g_symbols.end())

@@ -35,6 +35,8 @@ reads and runs additional passes on the function.
 using namespace std;
 using namespace llvm;
 
+extern ExecutionEngine * EE;
+
 queue <string> *g_hot_messages;
 sys :: Mutex *g_jit_lock;
 
@@ -44,7 +46,16 @@ sys :: Mutex *g_jit_lock;
 ///extern void EdgeProfAtExitHandler();
 void InsertMessage(Function *F)
 {
+  typedef void (*prototype)(void);
   printf("Back into the runtime: %s\n", F->getName().c_str());
+
+  JIT * jit;
+  jit=dynamic_cast<JIT*> (EE);
+
+  prototype EdgeProfAtExitHandler;
+  EdgeProfAtExitHandler=(prototype)jit->getPointerToNamedFunction("EdgeProfAtExitHandler");
+  assert(EdgeProfAtExitHandler!=NULL);
+  EdgeProfAtExitHandler();
 
 ///  EdgeProfAtExitHandler();
 

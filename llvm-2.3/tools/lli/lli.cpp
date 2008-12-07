@@ -69,7 +69,8 @@ namespace {
                   cl::init(true));
 }
 
-static ExecutionEngine *EE = 0;
+// ahmad changed this to extern from static
+ExecutionEngine *EE = 0;
 
 static void do_shutdown() {
   delete EE;
