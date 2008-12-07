@@ -302,6 +302,8 @@
 	case X86::CALL64pcrel32:
 	case X86::CALL64r:
 	case X86::CALLpcrel32:
+	case X86::RET:
+	case X86::RETI:
 		return turnOnFUT(1, FUT_BRANCH);
 		break;
 
@@ -1416,8 +1418,6 @@
 	case X86::REP_STOSD:
 	case X86::REP_STOSQ:
 	case X86::REP_STOSW:
-	case X86::RET:
-	case X86::RETI:
 	case X86::ROL16m1:
 	case X86::ROL16mCL:
 	case X86::ROL16mi:
