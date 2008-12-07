@@ -67,6 +67,11 @@ namespace {
   NoLazyCompilation("no-lazy",
                   cl::desc("Disable JIT lazy compilation"),
                   cl::init(true));
+
+  cl::opt<bool>
+  EnableJITPass("enable-jit-pass",
+      cl::desc("Enable JIT break-out pass"),
+      cl::init(true));
 }
 
 // ahmad changed this to extern from static
@@ -152,9 +157,12 @@ int main(int argc, char **argv, char * const *envp) {
   }
 #else
   // Create a return to JIT pass and run it.
-  PM.add(createEdgeProfilerPass());
-  PM.add(createReturnToJITPass());
-  PM.run(*Mod);
+  if(EnableJITPass)  
+  {
+    PM.add(createEdgeProfilerPass());
+    PM.add(createReturnToJITPass());
+    PM.run(*Mod);
+  }
 #endif
 
 

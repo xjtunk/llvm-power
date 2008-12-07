@@ -89,7 +89,7 @@ namespace {
         traceSet.insert(MBB);
       }
 ///      assert(~finalMask!=0 && "Mask is 0!\n");
-///      cout<<"Finalmask: "<<std::hex<<finalMask<<std::endl;
+      cout<<"Finalmask: "<<std::hex<<finalMask<<std::endl;
       insertGatingInstruction(finalMask, trace[0]->begin());
       printf("Done optimizing trace\n");
 
