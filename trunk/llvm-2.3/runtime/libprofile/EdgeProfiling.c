@@ -44,6 +44,11 @@ void handleSIGALRM(int arg) {
   alarm(1);
 }
 
+void TestFunction()
+{
+  printf("AHMAD in function: %s\n",__FUNCTION__);
+}
+
 /* llvm_start_edge_profiling - This is the main entry point of the edge
  * profiling library.  It is responsible for setting up the atexit handler.
  */
@@ -52,7 +57,7 @@ int llvm_start_edge_profiling(int argc, const char **argv,
   int Ret = save_arguments(argc, argv);
   ArrayStart = arrayStart;
   NumElements = numElements;
-  atexit(EdgeProfAtExitHandler);
+///  atexit(EdgeProfAtExitHandler);
 #if 0
   // Brooks
   // Added signal handler for ALARM to do timer interrupts
