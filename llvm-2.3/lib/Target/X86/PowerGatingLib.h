@@ -71,7 +71,95 @@
 	case X86::ADDSUBPDrr:
 	case X86::ADDSUBPSrm:
 	case X86::ADDSUBPSrr:
-		return turnOnFUT(1, FUT_INT_ADDER_ARITH);
+	case X86::DEC16m:
+	case X86::DEC16r:
+	case X86::DEC32m:
+	case X86::DEC32r:
+	case X86::DEC64_16m:
+	case X86::DEC64_16r:
+	case X86::DEC64_32m:
+	case X86::DEC64_32r:
+	case X86::DEC64m:
+	case X86::DEC64r:
+	case X86::DEC8m:
+	case X86::DEC8r:
+	case X86::SUB16mi:
+	case X86::SUB16mi8:
+	case X86::SUB16mr:
+	case X86::SUB16ri:
+	case X86::SUB16ri8:
+	case X86::SUB16rm:
+	case X86::SUB16rr:
+	case X86::SUB32mi:
+	case X86::SUB32mi8:
+	case X86::SUB32mr:
+	case X86::SUB32ri:
+	case X86::SUB32ri8:
+	case X86::SUB32rm:
+	case X86::SUB32rr:
+	case X86::SUB64mi32:
+	case X86::SUB64mi8:
+	case X86::SUB64mr:
+	case X86::SUB64ri32:
+	case X86::SUB64ri8:
+	case X86::SUB64rm:
+	case X86::SUB64rr:
+	case X86::SUB8mi:
+	case X86::SUB8mr:
+	case X86::SUB8ri:
+	case X86::SUB8rm:
+	case X86::SUB8rr:
+	case X86::SUBPDrm:
+	case X86::SUBPDrr:
+	case X86::SUBPSrm:
+	case X86::SUBPSrr:
+	case X86::SUBR_F32m:
+	case X86::SUBR_F64m:
+	case X86::SUBR_FI16m:
+	case X86::SUBR_FI32m:
+	case X86::SUBR_FPrST0:
+	case X86::SUBR_FST0r:
+	case X86::SUBR_Fp32m:
+	case X86::SUBR_Fp64m:
+	case X86::SUBR_Fp64m32:
+	case X86::SUBR_Fp80m32:
+	case X86::SUBR_Fp80m64:
+	case X86::SUBR_FpI16m32:
+	case X86::SUBR_FpI16m64:
+	case X86::SUBR_FpI16m80:
+	case X86::SUBR_FpI32m32:
+	case X86::SUBR_FpI32m64:
+	case X86::SUBR_FpI32m80:
+	case X86::SUBR_FrST0:
+	case X86::SUBSDrm:
+	case X86::SUBSDrm_Int:
+	case X86::SUBSDrr:
+	case X86::SUBSDrr_Int:
+	case X86::SUBSSrm:
+	case X86::SUBSSrm_Int:
+	case X86::SUBSSrr:
+	case X86::SUBSSrr_Int:
+	case X86::HADDPDrm:
+	case X86::HADDPDrr:
+	case X86::HADDPSrm:
+	case X86::HADDPSrr:
+	case X86::HSUBPDrm:
+	case X86::HSUBPDrr:
+	case X86::HSUBPSrm:
+	case X86::HSUBPSrr:
+	case X86::INC16m:
+	case X86::INC16r:
+	case X86::INC32m:
+	case X86::INC32r:
+	case X86::INC64_16m:
+	case X86::INC64_16r:
+	case X86::INC64_32m:
+	case X86::INC64_32r:
+	case X86::INC64m:
+	case X86::INC64r:
+	case X86::INC8m:
+	case X86::INC8r:
+		return turnOnFUT(3, FUT_INT_ADDER_ARITH, FUT_LOAD, FUT_STORE);
 		break;
 
 	case X86::ADD_F32m:
@@ -95,7 +183,26 @@
 	case X86::ADD_FpI32m64:
 	case X86::ADD_FpI32m80:
 	case X86::ADD_FrST0:
-		return turnOnFUT(1, FUT_FP_ADDER);
+	case X86::FP32_TO_INT16_IN_MEM:
+	case X86::FP32_TO_INT32_IN_MEM:
+	case X86::FP32_TO_INT64_IN_MEM:
+	case X86::FP64_TO_INT16_IN_MEM:
+	case X86::FP64_TO_INT32_IN_MEM:
+	case X86::FP64_TO_INT64_IN_MEM:
+	case X86::FP80_TO_INT16_IN_MEM:
+	case X86::FP80_TO_INT32_IN_MEM:
+	case X86::FP80_TO_INT64_IN_MEM:
+	case X86::FP_REG_KILL:
+	case X86::FpGET_ST0_32:
+	case X86::FpGET_ST0_64:
+	case X86::FpGET_ST0_80:
+	case X86::FpGET_ST1_32:
+	case X86::FpGET_ST1_64:
+	case X86::FpGET_ST1_80:
+	case X86::FpSET_ST0_32:
+	case X86::FpSET_ST0_64:
+	case X86::FpSET_ST0_80:
+		return turnOnFUT(3, FUT_FP_ADDER, FUT_LOAD, FUT_STORE);
 		break;
 
 	case X86::AND16mi:
@@ -132,7 +239,53 @@
 	case X86::ANDPDrr:
 	case X86::ANDPSrm:
 	case X86::ANDPSrr:
-		return turnOnFUT(1, FUT_INT_ADDER_LOGIC);
+	case X86::FsANDNPDrm:
+	case X86::FsANDNPDrr:
+	case X86::FsANDNPSrm:
+	case X86::FsANDNPSrr:
+	case X86::FsANDPDrm:
+	case X86::FsANDPDrr:
+	case X86::FsANDPSrm:
+	case X86::FsANDPSrr:
+	case X86::FsORPDrm:
+	case X86::FsORPDrr:
+	case X86::FsORPSrm:
+	case X86::FsORPSrr:
+	case X86::FsXORPDrm:
+	case X86::FsXORPDrr:
+	case X86::FsXORPSrm:
+	case X86::FsXORPSrr:
+	case X86::XOR16mi:
+	case X86::XOR16mi8:
+	case X86::XOR16mr:
+	case X86::XOR16ri:
+	case X86::XOR16ri8:
+	case X86::XOR16rm:
+	case X86::XOR16rr:
+	case X86::XOR32mi:
+	case X86::XOR32mi8:
+	case X86::XOR32mr:
+	case X86::XOR32ri:
+	case X86::XOR32ri8:
+	case X86::XOR32rm:
+	case X86::XOR32rr:
+	case X86::XOR64mi32:
+	case X86::XOR64mi8:
+	case X86::XOR64mr:
+	case X86::XOR64ri32:
+	case X86::XOR64ri8:
+	case X86::XOR64rm:
+	case X86::XOR64rr:
+	case X86::XOR8mi:
+	case X86::XOR8mr:
+	case X86::XOR8ri:
+	case X86::XOR8rm:
+	case X86::XOR8rr:
+	case X86::XORPDrm:
+	case X86::XORPDrr:
+	case X86::XORPSrm:
+	case X86::XORPSrr:
+		return turnOnFUT(3, FUT_INT_ADDER_LOGIC, FUT_LOAD, FUT_STORE);
 		break;
 
 	case X86::ATOMAND32:
@@ -199,18 +352,6 @@
 	case X86::CVTTSS2SIrr:
 	case X86::CWD:
 	case X86::CWDE:
-	case X86::DEC16m:
-	case X86::DEC16r:
-	case X86::DEC32m:
-	case X86::DEC32r:
-	case X86::DEC64_16m:
-	case X86::DEC64_16r:
-	case X86::DEC64_32m:
-	case X86::DEC64_32r:
-	case X86::DEC64m:
-	case X86::DEC64r:
-	case X86::DEC8m:
-	case X86::DEC8r:
 		return turnOnFUT(FUT_ALL);
 		break;
 
@@ -344,7 +485,11 @@
 	case X86::CMOV_V2F64:
 	case X86::CMOV_V2I64:
 	case X86::CMOV_V4F32:
-		return turnOnFUT(1, FUT_MOVER);
+	case X86::FsMOVAPDrm:
+	case X86::FsMOVAPDrr:
+	case X86::FsMOVAPSrm:
+	case X86::FsMOVAPSrr:
+		return turnOnFUT(2, FUT_LOAD, FUT_STORE);
 		break;
 
 	case X86::CMP16mi:
@@ -443,7 +588,7 @@
 	case X86::DIV_FpI32m64:
 	case X86::DIV_FpI32m80:
 	case X86::DIV_FrST0:
-		return turnOnFUT(1, FUT_FP_DIV);
+		return turnOnFUT(3, FUT_FP_DIV, FUT_LOAD, FUT_STORE);
 		break;
 
 	case X86::DPPDrmi:
@@ -460,65 +605,6 @@
 		return turnOnFUT(FUT_ALL);
 		break;
 
-	case X86::FP32_TO_INT16_IN_MEM:
-	case X86::FP32_TO_INT32_IN_MEM:
-	case X86::FP32_TO_INT64_IN_MEM:
-	case X86::FP64_TO_INT16_IN_MEM:
-	case X86::FP64_TO_INT32_IN_MEM:
-	case X86::FP64_TO_INT64_IN_MEM:
-	case X86::FP80_TO_INT16_IN_MEM:
-	case X86::FP80_TO_INT32_IN_MEM:
-	case X86::FP80_TO_INT64_IN_MEM:
-	case X86::FP_REG_KILL:
-	case X86::FpGET_ST0_32:
-	case X86::FpGET_ST0_64:
-	case X86::FpGET_ST0_80:
-	case X86::FpGET_ST1_32:
-	case X86::FpGET_ST1_64:
-	case X86::FpGET_ST1_80:
-	case X86::FpSET_ST0_32:
-	case X86::FpSET_ST0_64:
-	case X86::FpSET_ST0_80:
-		return turnOnFUT(2, FUT_INT_ADDER_ARITH, FUT_LOAD, FUT_STORE);
-		break;
-
-	case X86::FsMOVAPDrm:
-	case X86::FsMOVAPDrr:
-	case X86::FsMOVAPSrm:
-	case X86::FsMOVAPSrr:
-		return turnOnFUT(1, FUT_MOVER);
-		break;
-
-	case X86::FsANDNPDrm:
-	case X86::FsANDNPDrr:
-	case X86::FsANDNPSrm:
-	case X86::FsANDNPSrr:
-	case X86::FsANDPDrm:
-	case X86::FsANDPDrr:
-	case X86::FsANDPSrm:
-	case X86::FsANDPSrr:
-	case X86::FsORPDrm:
-	case X86::FsORPDrr:
-	case X86::FsORPSrm:
-	case X86::FsORPSrr:
-	case X86::FsXORPDrm:
-	case X86::FsXORPDrr:
-	case X86::FsXORPSrm:
-	case X86::FsXORPSrr:
-		return turnOnFUT(1, FUT_INT_ADDER_LOGIC);
-		break;
-
-	case X86::HADDPDrm:
-	case X86::HADDPDrr:
-	case X86::HADDPSrm:
-	case X86::HADDPSrr:
-	case X86::HSUBPDrm:
-	case X86::HSUBPDrr:
-	case X86::HSUBPSrm:
-	case X86::HSUBPSrr:
-		return turnOnFUT(1, FUT_INT_ADDER_ARITH);
-		break;
-
 	case X86::IDIV16m:
 	case X86::IDIV16r:
 	case X86::IDIV32m:
@@ -527,7 +613,7 @@
 	case X86::IDIV64r:
 	case X86::IDIV8m:
 	case X86::IDIV8r:
-		return turnOnFUT(1, FUT_INT_DIV);
+		return turnOnFUT(3, FUT_INT_DIV, FUT_LOAD, FUT_STORE);
 		break;
 
 	case X86::FsFLD0SD:
@@ -547,57 +633,14 @@
 		return turnOnFUT(1, FUT_LOAD);
 		break;
 
-	case X86::IMUL16m:
-	case X86::IMUL16r:
-	case X86::IMUL16rm:
-	case X86::IMUL16rmi:
-	case X86::IMUL16rmi8:
-	case X86::IMUL16rr:
-	case X86::IMUL16rri:
-	case X86::IMUL16rri8:
-	case X86::IMUL32m:
-	case X86::IMUL32r:
-	case X86::IMUL32rm:
-	case X86::IMUL32rmi:
-	case X86::IMUL32rmi8:
-	case X86::IMUL32rr:
-	case X86::IMUL32rri:
-	case X86::IMUL32rri8:
-	case X86::IMUL64m:
-	case X86::IMUL64r:
-	case X86::IMUL64rm:
-	case X86::IMUL64rmi32:
-	case X86::IMUL64rmi8:
-	case X86::IMUL64rr:
-	case X86::IMUL64rri32:
-	case X86::IMUL64rri8:
-	case X86::IMUL8m:
-	case X86::IMUL8r:
-		return turnOnFUT(1, FUT_INT_MULTIPLIER);
+	// Signed integer multiply
+	case X86::IMUL16m: case X86::IMUL16r: case X86::IMUL16rm: case X86::IMUL16rmi: case X86::IMUL16rmi8: case X86::IMUL16rr: case X86::IMUL16rri: case X86::IMUL16rri8: case X86::IMUL32m: case X86::IMUL32r: case X86::IMUL32rm: case X86::IMUL32rmi: case X86::IMUL32rmi8: case X86::IMUL32rr: case X86::IMUL32rri: case X86::IMUL32rri8: case X86::IMUL64m: case X86::IMUL64r: case X86::IMUL64rm: case X86::IMUL64rmi32: case X86::IMUL64rmi8: case X86::IMUL64rr: case X86::IMUL64rri32: case X86::IMUL64rri8: case X86::IMUL8m: case X86::IMUL8r:
+		return turnOnFUT(3, FUT_INT_MULTIPLIER, FUT_LOAD, FUT_STORE);
 		break;
 
-	case X86::IN16ri:
-	case X86::IN16rr:
-	case X86::IN32ri:
-	case X86::IN32rr:
-	case X86::IN8ri:
-	case X86::IN8rr:
+	// Input from port
+	case X86::IN16ri: case X86::IN16rr: case X86::IN32ri: case X86::IN32rr: case X86::IN8ri: case X86::IN8rr:
 		return turnOnFUT(FUT_ALL);
-		break;
-
-	case X86::INC16m:
-	case X86::INC16r:
-	case X86::INC32m:
-	case X86::INC32r:
-	case X86::INC64_16m:
-	case X86::INC64_16r:
-	case X86::INC64_32m:
-	case X86::INC64_32r:
-	case X86::INC64m:
-	case X86::INC64r:
-	case X86::INC8m:
-	case X86::INC8r:
-		return turnOnFUT(FUT_INT_ADDER_ARITH);
 		break;
 
 	case X86::INSERTPSrm:
@@ -1769,65 +1812,6 @@
 		return turnOnFUT(FUT_ALL);
 		break;
 
-	case X86::SUB16mi:
-	case X86::SUB16mi8:
-	case X86::SUB16mr:
-	case X86::SUB16ri:
-	case X86::SUB16ri8:
-	case X86::SUB16rm:
-	case X86::SUB16rr:
-	case X86::SUB32mi:
-	case X86::SUB32mi8:
-	case X86::SUB32mr:
-	case X86::SUB32ri:
-	case X86::SUB32ri8:
-	case X86::SUB32rm:
-	case X86::SUB32rr:
-	case X86::SUB64mi32:
-	case X86::SUB64mi8:
-	case X86::SUB64mr:
-	case X86::SUB64ri32:
-	case X86::SUB64ri8:
-	case X86::SUB64rm:
-	case X86::SUB64rr:
-	case X86::SUB8mi:
-	case X86::SUB8mr:
-	case X86::SUB8ri:
-	case X86::SUB8rm:
-	case X86::SUB8rr:
-	case X86::SUBPDrm:
-	case X86::SUBPDrr:
-	case X86::SUBPSrm:
-	case X86::SUBPSrr:
-	case X86::SUBR_F32m:
-	case X86::SUBR_F64m:
-	case X86::SUBR_FI16m:
-	case X86::SUBR_FI32m:
-	case X86::SUBR_FPrST0:
-	case X86::SUBR_FST0r:
-	case X86::SUBR_Fp32m:
-	case X86::SUBR_Fp64m:
-	case X86::SUBR_Fp64m32:
-	case X86::SUBR_Fp80m32:
-	case X86::SUBR_Fp80m64:
-	case X86::SUBR_FpI16m32:
-	case X86::SUBR_FpI16m64:
-	case X86::SUBR_FpI16m80:
-	case X86::SUBR_FpI32m32:
-	case X86::SUBR_FpI32m64:
-	case X86::SUBR_FpI32m80:
-	case X86::SUBR_FrST0:
-	case X86::SUBSDrm:
-	case X86::SUBSDrm_Int:
-	case X86::SUBSDrr:
-	case X86::SUBSDrr_Int:
-	case X86::SUBSSrm:
-	case X86::SUBSSrm_Int:
-	case X86::SUBSSrr:
-	case X86::SUBSSrr_Int:
-		return turnOnFUT(1, FUT_INT_ADDER_ARITH);
-		break;
-
 	case X86::SUB_F32m:
 	case X86::SUB_F64m:
 	case X86::SUB_FI16m:
@@ -1849,14 +1833,7 @@
 	case X86::SUB_FpI32m64:
 	case X86::SUB_FpI32m80:
 	case X86::SUB_FrST0:
-		return turnOnFUT(1, FUT_FP_ADDER);
-		break;
-
-	case X86::TCRETURNdi:
-	case X86::TCRETURNdi64:
-	case X86::TCRETURNri:
-	case X86::TCRETURNri64:
-		return turnOnFUT(1, FUT_ALL);
+		return turnOnFUT(3, FUT_FP_ADDER, FUT_LOAD, FUT_STORE);
 		break;
 
 	case X86::TEST16mi:
@@ -1878,6 +1855,10 @@
 		return turnOnFUT(1, FUT_LOGIC);
 		break;
 
+	case X86::TCRETURNdi:
+	case X86::TCRETURNdi64:
+	case X86::TCRETURNri:
+	case X86::TCRETURNri64:
 	case X86::TLS_addr32:
 	case X86::TLS_addr64:
 	case X86::TLS_gs_ri:
@@ -1919,39 +1900,6 @@
 	case X86::XCHG8rm:
 	case X86::XCH_F:
 		return turnOnFUT(FUT_ALL);
-		break;
-
-	case X86::XOR16mi:
-	case X86::XOR16mi8:
-	case X86::XOR16mr:
-	case X86::XOR16ri:
-	case X86::XOR16ri8:
-	case X86::XOR16rm:
-	case X86::XOR16rr:
-	case X86::XOR32mi:
-	case X86::XOR32mi8:
-	case X86::XOR32mr:
-	case X86::XOR32ri:
-	case X86::XOR32ri8:
-	case X86::XOR32rm:
-	case X86::XOR32rr:
-	case X86::XOR64mi32:
-	case X86::XOR64mi8:
-	case X86::XOR64mr:
-	case X86::XOR64ri32:
-	case X86::XOR64ri8:
-	case X86::XOR64rm:
-	case X86::XOR64rr:
-	case X86::XOR8mi:
-	case X86::XOR8mr:
-	case X86::XOR8ri:
-	case X86::XOR8rm:
-	case X86::XOR8rr:
-	case X86::XORPDrm:
-	case X86::XORPDrr:
-	case X86::XORPSrm:
-	case X86::XORPSrr:
-		return turnOnFUT(1, FUT_INT_ADDER_LOGIC);
 		break;
 
 	case X86::INSTRUCTION_LIST_END:
