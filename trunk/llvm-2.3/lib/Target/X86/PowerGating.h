@@ -31,7 +31,11 @@ namespace llvm
     FUT_LOAD,
     FUT_STORE,
     FUT_L1_DCACHE,
-    FUT_L2_UCACHE
+    FUT_L2_UCACHE,
+	FUT_MMX,
+	FUT_VECTOR_ALU,
+	FUT_VECTOR,
+	FUT_END_OF_FUTS
   };
   // 64-bit mask defines which functional units to turn off.
   typedef unsigned long long gatingmask_t; 
