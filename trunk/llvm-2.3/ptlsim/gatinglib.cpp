@@ -343,6 +343,7 @@ power_t FunctionalUnitManager::getTotalPower(const tick_t &now)
 int FunctionalUnitManager::readFunctionalUnitFile(const char * filename)
 {
 	
+#if 0
   unsigned int size=0;
   stringbuf sb;
   istream infile;
@@ -369,6 +370,7 @@ int FunctionalUnitManager::readFunctionalUnitFile(const char * filename)
     functionalUnits[size-1] = new FunctionalUnit(tokens[0], atoll(tokens[2]),atoll(tokens[3]), atof(tokens[1]));
   }
   infile.close();
+#endif
 
 
   return 0;
