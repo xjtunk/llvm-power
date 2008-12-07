@@ -33,7 +33,7 @@ using namespace llvm;
 STATISTIC(NumFXCH, "Number of fxch instructions inserted");
 STATISTIC(NumFP  , "Number of floating point instructions");
 
-bool powerPassEnabled=false;
+bool powerPassEnabled=true;
 
 namespace {
   struct VISIBILITY_HIDDEN PowerOpt : public MachineFunctionPass {
@@ -67,6 +67,8 @@ namespace {
 
     void optimizeTrace(std::vector<MachineBasicBlock*> & trace)
     {
+      std::set<MachineBasicBlock*> traceSet;
+
       assert(trace.size()!=0);
       gatingmask_t finalMask=0;
       printf("Optimizing trace...\n");
@@ -84,11 +86,28 @@ namespace {
           }
           finalMask=tempMask|finalMask;
         }
+        traceSet.insert(MBB);
       }
 ///      assert(~finalMask!=0 && "Mask is 0!\n");
 ///      cout<<"Finalmask: "<<std::hex<<finalMask<<std::endl;
       insertGatingInstruction(finalMask, trace[0]->begin());
       printf("Done optimizing trace\n");
+
+      // Let's change the off-trace to be correct.
+      for( unsigned int i=0 ; i<trace.size() ; i++ )
+      {
+        // Go through all the successors of this current MBB.
+        // Check if any successor is not the traceSet.
+        // If not, insert a power gating instruction with all on.
+        for( MachineBasicBlock::succ_iterator si=trace[i]->succ_begin() ; si!=trace[i]->succ_end() ; si++ )
+        {
+          if(traceSet.find(*si)==traceSet.end())
+          {
+            insertGatingInstruction((gatingmask_t)-1, (*si)->begin());
+          }
+        }
+      }
+      printf("Done correcting off-trace machine basic blocks\n");
     }
 
     void printMachineLoop(MachineLoop * ml) const

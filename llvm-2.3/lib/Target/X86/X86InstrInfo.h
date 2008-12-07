@@ -265,6 +265,7 @@ public:
 
   // Ahmad added function for obtaining mask for instruction.
   static gatingmask_t getGatingMask(const MachineInstr *MI);
+  static gatingmask_t getGatingImm(const MachineInstr *MI);
 
   bool isReallyTriviallyReMaterializable(MachineInstr *MI) const;
   void reMaterialize(MachineBasicBlock &MBB, MachineBasicBlock::iterator MI,

@@ -717,6 +717,12 @@ gatingmask_t X86InstrInfo::getGatingMask(const MachineInstr *MI)
   return 0;
 }
 
+gatingmask_t X86InstrInfo::getGatingImm(const MachineInstr * MI)
+{
+  assert(MI->getOpcode()==X86::GATE);
+  return MI->getOperand(0).getImm();
+}
+
 unsigned X86InstrInfo::isStoreToStackSlot(MachineInstr *MI,
                                           int &FrameIndex) const {
   switch (MI->getOpcode()) {

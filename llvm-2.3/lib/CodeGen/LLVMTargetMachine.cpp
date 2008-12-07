@@ -41,7 +41,7 @@ static cl::opt<bool>
 AlignLoops("align-loops", cl::init(true), cl::Hidden,
               cl::desc("Align loop headers"));
 static cl::opt<bool>
-PerformLICM("machine-licm",
+PerformLICM("enable-machine-licm",
             cl::init(false), cl::Hidden,
             cl::desc("Perform loop-invariant code motion on machine code"));
 
