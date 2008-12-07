@@ -52,8 +52,8 @@ INCFLAGS += -DPTLSIM_HYPERVISOR -D__XEN__
 endif
 
 ifdef __x86_64__
-#CFLAGS = -O99 -g -fomit-frame-pointer -pipe -march=k8 -falign-functions=16 -funroll-loops -funit-at-a-time -minline-all-stringops
-CFLAGS = -O2 -g3 -march=k8 -falign-functions=16 -minline-all-stringops
+CFLAGS = -O99 -g -fomit-frame-pointer -pipe -march=k8 -falign-functions=16 -funroll-loops -funit-at-a-time -minline-all-stringops
+#CFLAGS = -O2 -g3 -march=k8 -falign-functions=16 -minline-all-stringops
 # -O1 doesn't work
 CFLAGS32BIT = $(CFLAGS) -m32
 else
@@ -68,7 +68,7 @@ ifdef PTLSIM_HYPERVISOR
 CFLAGS += -fpic -mno-red-zone
 endif
 
-CFLAGS += -fno-trapping-math  -fno-exceptions -fno-rtti -funroll-loops -mpreferred-stack-boundary=4 -fno-strict-aliasing -Wreturn-type $(GCCVER_SPECIFIC)
+CFLAGS += -fno-trapping-math -fno-stack-protector -fno-exceptions -fno-rtti -funroll-loops -mpreferred-stack-boundary=4 -fno-strict-aliasing -Wreturn-type $(GCCVER_SPECIFIC)
 
 
 BASEOBJS = superstl.o config.o mathlib.o syscalls.o
@@ -76,9 +76,9 @@ STDOBJS = glibc.o
 
 ifdef __x86_64__
 ifdef PTLSIM_HYPERVISOR
-COMMONOBJS = linkstart.o lowlevel-64bit-xen.o ptlsim.o ptlxen.o ptlxen-memory.o ptlxen-events.o ptlxen-common.o perfctrs.o mm.o superstl.o config.o mathlib.o klibc.o ptlhwdef.o datastore.o gatinglib.o decode-core.o decode-fast.o decode-complex.o decode-x87.o decode-sse.o uopimpl.o seqcore.o ptlsim.dst.o linkend.o
+COMMONOBJS = linkstart.o lowlevel-64bit-xen.o ptlsim.o ptlxen.o ptlxen-memory.o ptlxen-events.o ptlxen-common.o perfctrs.o mm.o superstl.o config.o mathlib.o klibc.o ptlhwdef.o datastore.o decode-core.o decode-fast.o decode-complex.o decode-x87.o decode-sse.o uopimpl.o seqcore.o ptlsim.dst.o linkend.o
 else
-COMMONOBJS = linkstart.o lowlevel-64bit.o ptlsim.o kernel.o mm.o ptlhwdef.o decode-core.o decode-fast.o decode-complex.o decode-x87.o decode-sse.o uopimpl.o datastore.o injectcode-64bit.o gatinglib.o seqcore.o $(BASEOBJS) klibc.o ptlsim.dst.o linkend.o
+COMMONOBJS = linkstart.o lowlevel-64bit.o ptlsim.o kernel.o mm.o ptlhwdef.o decode-core.o decode-fast.o decode-complex.o decode-x87.o decode-sse.o uopimpl.o datastore.o injectcode-64bit.o seqcore.o $(BASEOBJS) klibc.o ptlsim.dst.o linkend.o
 endif
 else
 # 32-bit PTLsim32 only:
@@ -88,11 +88,11 @@ endif
 OOOOBJS = branchpred.o dcache.o ooocore.o ooopipe.o oooexec.o 
 OBJFILES = $(COMMONOBJS) $(OOOOBJS)
 
-COMMONINCLUDES = gatinglib.h logic.h ptlhwdef.h decode.h seqexec.h dcache.h dcache-amd-k8.h config.h ptlsim.h datastore.h superstl.h globals.h kernel.h mm.h ptlcalls.h loader.h mathlib.h klibc.h syscalls.h ptlxen.h stats.h xen-types.h
+COMMONINCLUDES = logic.h ptlhwdef.h decode.h seqexec.h dcache.h dcache-amd-k8.h config.h ptlsim.h datastore.h superstl.h globals.h kernel.h mm.h ptlcalls.h loader.h mathlib.h klibc.h syscalls.h ptlxen.h stats.h xen-types.h
 OOOINCLUDES = branchpred.h ooocore.h ooocore-amd-k8.h
 INCLUDEFILES = $(COMMONINCLUDES) $(OOOINCLUDES)
 
-COMMONCPPFILES = gatinglib.cpp ptlsim.cpp kernel.cpp mm.cpp superstl.cpp ptlhwdef.cpp decode-core.cpp decode-fast.cpp decode-complex.cpp decode-x87.cpp decode-sse.cpp lowlevel-64bit.S lowlevel-32bit.S linkstart.S linkend.S uopimpl.cpp dcache.cpp config.cpp datastore.cpp injectcode.cpp ptlcalls.c cpuid.cpp ptlstats.cpp klibc.cpp glibc.cpp mathlib.cpp syscalls.cpp makeusage.cpp
+COMMONCPPFILES = ptlsim.cpp kernel.cpp mm.cpp superstl.cpp ptlhwdef.cpp decode-core.cpp decode-fast.cpp decode-complex.cpp decode-x87.cpp decode-sse.cpp lowlevel-64bit.S lowlevel-32bit.S linkstart.S linkend.S uopimpl.cpp dcache.cpp config.cpp datastore.cpp injectcode.cpp ptlcalls.c cpuid.cpp ptlstats.cpp klibc.cpp glibc.cpp mathlib.cpp syscalls.cpp makeusage.cpp
 
 ifdef PTLSIM_HYPERVISOR
 COMMONCPPFILES += lowlevel-64bit-xen.S ptlxen.cpp ptlxen-memory.cpp ptlxen-events.cpp ptlxen-common.cpp perfctrs.cpp ptlmon.cpp ptlctl.cpp
@@ -103,9 +103,7 @@ CPPFILES = $(COMMONCPPFILES) $(OOOCPPFILES)
 
 CFLAGS += -D__PTLSIM_OOO_ONLY__
 
-# Ahmad changed this for now
 TOPLEVEL = ptlsim ptlstats ptlcalls.o ptlcalls-32bit.o cpuid
-###TOPLEVEL = main
 ifdef PTLSIM_HYPERVISOR
 TOPLEVEL += ptlctl
 endif
@@ -188,7 +186,7 @@ ptlsim: $(OBJFILES) Makefile ptlsim.lds
 endif # PTLSIM_HYPERVISOR
 else
 ptlsim: $(OBJFILES) Makefile ptlsim32.lds
-	ld -g -O2 $(OBJFILES) -o ptlsim $(LIBPERFCTR) -static --allow-multiple-definition -T ptlsim32.lds -e ptlsim_preinit_entry `gcc -print-libgcc-file-name` 
+	ld -g -O2 $(OBJFILES) -o ptlsim $(LIBPERFCTR) -static --allow-multiple-definition -T ptlsim32.lds -e ptlsim_preinit_entry `gcc -print-libgcc-file-name`
 endif
 
 ptlctl: ptlctl.o $(BASEOBJS) $(STDOBJS)
@@ -214,7 +212,7 @@ test.dat-32bit.S: test.dat Makefile
 	$(CC) $(CFLAGS) $(INCFLAGS) -c $<
 
 clean:
-	rm -fv ptlsim ptlstats ptlctl ptlxen.bin ptlxen.bin.debug usage.txt cpuid ptlsim.dst dstbuild.temp dstbuild.temp.cpp stats.i makeusage *.o core core.[0-9]* .depend *.gch main
+	rm -fv ptlsim ptlstats ptlctl ptlxen.bin ptlxen.bin.debug usage.txt cpuid ptlsim.dst dstbuild.temp dstbuild.temp.cpp stats.i makeusage *.o core core.[0-9]* .depend *.gch
 
 OBJFILES = $(COMMONOBJS) $(PT2XOBJS) $(OOOOBJS)
 INCLUDEFILES = $(COMMONINCLUDES) $(PT2XINCLUDES) $(OOOINCLUDES)
@@ -230,10 +228,6 @@ dist: $(DISTFILES)
 	tar zcvf ptlsim-`date "+%Y%m%d%H%M%S"`.tar.gz $(DISTFILES)
 
 backup: dist
-
-main: gatinglib.o main.o $(BASEOBJS) $(STDOBJS)
-	$(CC) -g gatinglib.o main.o $(BASEOBJS) $(STDOBJS) -o main
-###	ld -g $(BASEOBJS) main.o gatinglib.o -o main -static --allow-multiple-definition 
 
 distfiles: $(DISTFILES)
 	@echo $(DISTFILES)
