@@ -78,7 +78,7 @@ namespace {
           // Get the instruction's mask and OR it with the current mask.
           MachineInstr &MI=*it;
           gatingmask_t tempMask=X86InstrInfo::getGatingMask(&MI);
-          cout << "Instruction: "<<MI<<"\treturned: "<<std::hex<<tempMask<<std::dec<<std::endl;
+///          cout << "Instruction: "<<MI<<"\treturned: "<<std::hex<<tempMask<<std::dec<<std::endl;
           finalMask=tempMask|finalMask;
         }
       }
@@ -360,7 +360,7 @@ bool PowerOpt::runOnMachineFunction(MachineFunction &MF) {
     return false;
   }
   cout<<"RUNNING POWER PASS NOW on: "<<MF.getFunction()->getName().c_str()<<std::endl;
-  int numLoops;
+  int numLoops=0;
   std::vector<MachineBasicBlock*> trace;
   TII = MF.getTarget().getInstrInfo();
 
@@ -400,8 +400,10 @@ bool PowerOpt::runOnMachineFunction(MachineFunction &MF) {
 ///  }
   
   // Only generate acyclic trace when there are no loops.
+  cout<<"\tNUM LOOPS: "<<numLoops<<std::endl;
   if(numLoops==0)
   {
+    cout<<"\tINSIDE GENERATE TRACE\n";
     generateTrace(MF, trace);
   }
 #if 0
