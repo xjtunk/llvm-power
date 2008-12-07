@@ -16,7 +16,7 @@ namespace llvm
     FUT_INT_SHIFTER,
     FUT_INT_MULTIPLIER,
     FUT_INT_DIV,
-    FUT_INT_AGU, // Address generation unit. Might be merged with adder
+    FUT_AGU,
 	FUT_BRANCH,
 	FUT_MOVER,
 	FUT_SET,
