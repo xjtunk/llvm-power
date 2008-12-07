@@ -42,7 +42,7 @@ namespace {
 
     virtual bool runOnMachineFunction(MachineFunction &MF);
     void generateTrace(MachineFunction &MF, std::vector<MachineBasicBlock*> &trace);
-    void addMachineBasicBlock(std::vector<MachineBasicBlock*> &trace, MachineBasicBlock *current);
+    void addMachineBasicBlock(std::vector<MachineBasicBlock*> &trace, MachineBasicBlock *current, std::set<MachineBasicBlock*> * allowable=NULL);
 
     // ahmad added
     virtual void getAnalysisUsage(AnalysisUsage &AU) const {
@@ -128,8 +128,17 @@ namespace {
       if(nestSize==0)
       {
         std::vector<MachineBasicBlock*> trace;
-        printf("Found inner-most loop\n");
-        addMachineBasicBlock(trace, ml->getHeader());
+        printf("Found inner-most loop: header: %s\n", ml->getHeader()->getBasicBlock()->getName().c_str());
+
+        const std::vector<MachineBasicBlock*> & blocks=ml->getBlocks();
+        std::set<MachineBasicBlock*> allowable;
+        for( std::vector<MachineBasicBlock*>::const_iterator i=blocks.begin() ; i!=blocks.end() ; i++ )
+        {
+          cout<<"Loop body block: "<<(*i)->getBasicBlock()->getName()<<std::endl;
+          allowable.insert(*i);
+        }
+        cout<<"Before addMachineBasicBlock... set size: "<<allowable.size()<<std::endl;
+        addMachineBasicBlock(trace, ml->getHeader(), &allowable);
         printTrace(trace);
 ///        printMachineLoop(ml);
         // Let's optimize the trace here...
@@ -330,7 +339,7 @@ void PowerOpt::generateTrace(MachineFunction &MF, std::vector<MachineBasicBlock*
 }
 
 // This function is working fine.
-void PowerOpt::addMachineBasicBlock(std::vector<MachineBasicBlock*> &trace, MachineBasicBlock *current)
+void PowerOpt::addMachineBasicBlock(std::vector<MachineBasicBlock*> &trace, MachineBasicBlock *current, std::set<MachineBasicBlock*> * allowable)
 {
   // Get a list of all successors. If there is only one successor, we just add it to 
   // the trace and move on. 
@@ -360,6 +369,12 @@ void PowerOpt::addMachineBasicBlock(std::vector<MachineBasicBlock*> &trace, Mach
 
   for( MachineBasicBlock::succ_iterator it=current->succ_begin() ; it!=current->succ_end() ; it++ )
   {
+    // ahmad added for loops.
+    if(allowable!=NULL)
+    {
+      if(allowable->find(*it)==allowable->end())
+        continue;
+    }
     unsigned weight;
     MachineBasicBlock * next=*it;
     BasicBlock * currentBB=(BasicBlock*)current->getBasicBlock();
@@ -384,7 +399,7 @@ void PowerOpt::addMachineBasicBlock(std::vector<MachineBasicBlock*> &trace, Mach
   if(highestMBB==NULL)
     return;
 
-  addMachineBasicBlock(trace, highestMBB);
+  addMachineBasicBlock(trace, highestMBB, allowable);
 }
 
 
