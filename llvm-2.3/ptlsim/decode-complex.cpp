@@ -2366,7 +2366,7 @@ bool TraceDecoder::decode_complex() {
 	//	
 		//FunctionalUnitManager::getFUM()->dumpStats(sim_cycle);
 		FUM->processAtIssue(bitstring, sim_cycle);
-		FUM->dumpStats(sim_cycle);
+//		FUM->dumpStats(sim_cycle);
 		outputstuff(*(long long int*)(ripstart + 2));
     this << TransOp(OP_nop, REG_temp0, REG_zero, REG_zero, REG_zero, 10);
     

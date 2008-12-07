@@ -11,9 +11,9 @@
 #include <decode.h>
 #include <stats.h>
 
-
+#include <gatinglib.h>
 BasicBlockCache bbcache;
-
+FunctionalUnitManager* FUM;
 struct BasicBlockChunkListHashtableLinkManager {
   static inline BasicBlockChunkList* objof(selflistlink* link) {
     return baseof(BasicBlockChunkList, hashlink, link);
@@ -1599,7 +1599,8 @@ void BasicBlockCache::flush() {
   bool DEBUG = 1;
 
   if (DEBUG) logfile << "Flushing basic block cache at ", sim_cycle, " cycles, ", total_user_insns_committed, " commits:", endl;
-
+	
+	FUM->dumpStats(sim_cycle);
   stats.decoder.reclaim_rounds++;
 
   {

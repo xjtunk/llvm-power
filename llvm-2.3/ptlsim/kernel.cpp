@@ -29,8 +29,10 @@
 // ahmad added
 #include "getch.h"
 
+
 // Userspace PTLsim only supports one VCPU:
 int current_vcpuid() { return 0; }
+FunctionalUnitManager* FUM;
 
 static inline W64 do_syscall_64bit(W64 syscallid, W64 arg1, W64 arg2, W64 arg3, W64 arg4, W64 arg5, W64 arg6) {
   W64 rc;
@@ -1647,6 +1649,7 @@ int ptlsim_inject(int argc, char** argv) {
   // (child done)
   status = WEXITSTATUS(status);
 
+	
   if (DEBUG) cerr << "ptlsim: exiting with exit code ", status, endl, flush;
   
 
@@ -1838,6 +1841,7 @@ int ptlsim_inject(int argc, char** argv) {
 
   // (child done)
   status = WEXITSTATUS(status);
+
 
   
   if (DEBUG) cerr << "ptlsim: exiting with exit code ", status, endl, flush;
@@ -2326,6 +2330,9 @@ void switch_to_sim() {
 // PTLsim main: called after ptlsim_preinit() brings up boot subsystems
 //
 int main(int argc, char** argv) {
+	cerr << "Building FUM" ,endl, flush;
+	FUM = new FunctionalUnitManager("/net/hp95/uarch/users/jkron3/llvm-power/llvm-2.3/ptlsim/fu.txt");
+	cerr << "Completed Building FUM", endl, flush;
   configparser.setup();
   config.reset();
 
@@ -2376,4 +2383,5 @@ int main(int argc, char** argv) {
 
   // Context switch into virtual machine:
   switch_to_native_restore_context();
+
 }

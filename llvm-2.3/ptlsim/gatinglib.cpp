@@ -8,7 +8,25 @@
 // Because we are trying to model unlimited precision using limited number of bits.
 #define EPSILON 1e-5
 
-
+FunctionalUnit::FunctionalUnit(char* _name, tick_t _onLatency, tick_t _offLatency, power_t _onPower)
+		: name(_name), onPower(_onPower), offLatency(_offLatency), onLatency(_onLatency)
+{
+	//state attributes
+	status=FUS_ON;
+	nextClock = 0;
+	onTime = 0;
+	transitionTime = 0;
+	
+	//stats
+	totalPower = 0;
+	totalOnTime = 0;
+	totalOffTime = 0;
+	totalOnTransitionTime = 0;
+	totalOffTransitionTime = 0;
+	
+	decodeStatus = false;
+	valid = false;
+}
 
 void FunctionalUnitManager::processAtIssue(const mask_t &mask, const tick_t &now)
 {
@@ -88,11 +106,11 @@ tick_t FunctionalUnit::turnOff(const tick_t &now)
   } 
   else if(status == FUS_ON)
   {
-  	
+  	totalPower += onPower * (double)(now - onTime);
   	transitionTime = now;
     nextClock=now + offLatency;
     lastPeakPower = onPower;
-    totalPower += onPower * (double)(now - onTime);
+    
     
     totalOnTime += (now - onTime);
     
@@ -113,7 +131,7 @@ tick_t FunctionalUnit::turnOff(const tick_t &now)
   	tick_t chargedLatency = now - transitionTime;
   	
   	//update stat
-  	totalOnTransitionTime += chargedLatency;
+  	totalOnTransitionTime += now - lastTransition;
   	
   	//Calculate energy right now
   	double currentPower = (onPower/(double)onLatency)*(double)(chargedLatency + lastTransition);
@@ -150,6 +168,7 @@ tick_t FunctionalUnit::turnOn(const tick_t &now)
 {
   synchronize(now);
   
+  valid = true;
   if(status == FUS_ON)
   {
     #if DEBUG
@@ -159,12 +178,13 @@ tick_t FunctionalUnit::turnOn(const tick_t &now)
   } 
   else if(status == FUS_OFF)
   {
+  //update stats
+    totalOffTime += (now - transitionTime);
   	transitionTime = now;
     nextClock=now + onLatency;
     lastPeakPower = 0; 
     
-    //update stats
-    totalOffTime += (now - transitionTime);
+    
     #if DEBUG
     	cout<<now<<": "<<getName()<<" OFF -> ON_TRANSITION"<<endl;
     #endif 
@@ -183,7 +203,7 @@ tick_t FunctionalUnit::turnOn(const tick_t &now)
   	//Using parametrized line, figure out what instantateous power is
   	chargedLatency = now - transitionTime;
   	
-  	totalOffTransitionTime += chargedLatency;
+  	totalOffTransitionTime += offLatency - prevOnTime;
   	
   	currentPower = onPower - (onPower/((double)prevOnTime))*(double)((offLatency - prevOnTime) + chargedLatency); //instantaneous Power
   	
@@ -398,12 +418,35 @@ void FunctionalUnitManager::dumpFunctionalUnits()
 
 void FunctionalUnitManager::dumpStats(const tick_t &now)
 {
+//	cerr<<"functionalUnits.size: "<<functionalUnits.size()<<" now: "<<now<<endl,flush;
+	stringbuf sb;
+	double totalPower = 0;
+	double totalPowerNoOptimized = 0;
   for( unsigned int i=0 ; i<functionalUnits.size() ; i++ )
   {
   	FunctionalUnit* FU = functionalUnits[i];
-		cerr<<"\t "<<FU->getName()<<": TotalPower("<<FU->getTotalPower(now)<<") TotalOnTime("<<FU->getTimeSpentOn(now)<<") TotalOffTime("<<FU->getTimeSpentOff(now)<<") TotalOnTransitionTime("<<FU->getTimeInOnTransition()<<") TotalOffTransitionTime("<<FU->getTimeInOffTransition()<<endl;
+  	FU->synchronize(now);
+  	if(FU->isValid())
+  	{
+			sb<<"Functional Unit: ",					FU->getName(), endl;
+			sb<<"\tTotalPower: ",							FU->getTotalPower(now), endl;
+			sb<<"\tTotalOnTime: ",						FU->getTimeSpentOn(now), endl;
+			sb<<"\tTotalOffTime:",						FU->getTimeSpentOff(now), endl;
+			sb<<"\tTotalOnTransitionTime: ",	FU->getTimeInOnTransition(), endl;
+			sb<<"\tTotalOffTransitionTime: ",	FU->getTimeInOffTransition(), endl;
+			sb<<"\tPercent Time On: ",				(double)(FU->getTimeSpentOn(now)/(double)now), endl;
+			
+			
+			totalPower += FU->getTotalPower(now);
+			totalPowerNoOptimized += FU->getPowerNotOptimized(now);
+  	}
   }
-
+  
+  
+  sb<<"Total Power Consumed: ", totalPower, " in ",now,endl;
+  sb<<"Total Non-Optimized Power: ", totalPowerNoOptimized, endl;
+  sb<<"Percent Power Utlization: ", totalPower/totalPowerNoOptimized*(double)100,endl;
+  cerr<<sb, flush;
 }
 #undef LOG2
 #undef EPSILON
