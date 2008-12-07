@@ -35,6 +35,7 @@ using namespace std;
 using namespace llvm;
 
 extern ExecutionEngine * EE;
+extern bool powerPassEnabled;
 
 queue <string> *g_hot_messages;
 sys :: Mutex *g_jit_lock;
@@ -55,6 +56,8 @@ void InsertMessage(Function *F)
   EdgeProfAtExitHandler=(prototype)jit->getPointerToNamedFunction("EdgeProfAtExitHandler");
   assert(EdgeProfAtExitHandler!=NULL);
   EdgeProfAtExitHandler();
+  powerPassEnabled=true;
+  jit->recompileAndRelinkFunction(F);
 
 ///  EdgeProfAtExitHandler();
 
