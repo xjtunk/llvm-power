@@ -30,7 +30,6 @@ reads and runs additional passes on the function.
 //// Brooks
 //// including loopinfo.h to use the iterator for loops
 #include "llvm/Analysis/LoopInfo.h"
-#include "../../../runtime/libprofile/Profiling.h"
 
 using namespace std;
 using namespace llvm;
