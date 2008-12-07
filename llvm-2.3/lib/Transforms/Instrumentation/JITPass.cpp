@@ -279,6 +279,7 @@ public:
     }
 	bool runOnFunction(Function &f)
 	{
+          cout<<"\tINSIDE: JITPass::"<<__FUNCTION__<<std::endl;
 		if (f.isDeclaration()) {
 			return true;
 		}
