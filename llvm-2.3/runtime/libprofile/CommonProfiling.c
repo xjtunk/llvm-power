@@ -108,10 +108,18 @@ void write_profiling_data(enum ProfilingType PT, unsigned *Start,
         write(OutFile, &Zeros, 4-(SavedArgsLength&3));
     }
   }
- 
+
   /* Write out this record! */
   PTy = PT;
   write(OutFile, &PTy, sizeof(int));
   write(OutFile, &NumElements, sizeof(unsigned));
   write(OutFile, Start, NumElements*sizeof(unsigned));
+ 
+  //// Brooks
+  //// printf the counters
+#if 0
+  printf("PTy: %d\n", PTy);
+  printf("NumElements: %u\n", NumElements);
+  printf("Start: %p\n", (void*)Start);
+#endif
 }
