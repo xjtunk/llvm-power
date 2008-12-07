@@ -301,18 +301,28 @@ void FunctionalUnit::synchronize(const tick_t &now)
 
 FunctionalUnitManager::FunctionalUnitManager(const char * filename)
 	{
-	/*
-		if(!readFunctionalUnitFile(filename))
-		{
-			globalClock = 0;
-			
-		}
-		else
-			cerr<<"Error reading file "<<filename<<endl;
-	*/
-	functionalUnits.resize(2);
-	functionalUnits[0] = new FunctionalUnit("adder", 22, 11, 5);
-	functionalUnits[1] = new FunctionalUnit("mul", 55 ,33, 4);
+    functionalUnits.push(new FunctionalUnit("FUT_INT_ADD_ARITH", 10, 8, .5));
+    functionalUnits.push(new FunctionalUnit("FUT_INT_ADD_LOGIC", 7, 5, .3));
+    functionalUnits.push(new FunctionalUnit("FUT_INT_SHIFT", 6, 3, .2));
+    functionalUnits.push(new FunctionalUnit("FUT_INT_MUL", 30, 25, 2));
+    functionalUnits.push(new FunctionalUnit("FUT_INT_DIV", 35, 33, 2));
+    functionalUnits.push(new FunctionalUnit("FUT_FP_ADD", 20, 18, 1.3));
+    functionalUnits.push(new FunctionalUnit("FUT_FP_MUL", 45, 40, 1.5));
+    functionalUnits.push(new FunctionalUnit("FUT_FP_DIV", 60, 50, 1.8));
+    functionalUnits.push(new FunctionalUnit("FUT_FP_SQRT", 60, 50, 1.8));
+    functionalUnits.push(new FunctionalUnit("FUT_LOAD", 18,15, .8));
+    functionalUnits.push(new FunctionalUnit("FUT_STORE",18,15, .8));
+    functionalUnits.push(new FunctionalUnit("FUT_AGU", 8, 5, .2));
+		functionalUnits.push(new FunctionalUnit("FUT_BRANCH", 25, 20, .95));
+		functionalUnits.push(new FunctionalUnit("FUT_MOVE", 6, 3, .2));
+		functionalUnits.push(new FunctionalUnit("FUT_SET", 5, 2, .2));
+		functionalUnits.push(new FunctionalUnit("FUT_CMP", 10,8, .6));
+    functionalUnits.push(new FunctionalUnit("FUT_L1_DCACHE", 30, 26, 1.2));
+    functionalUnits.push(new FunctionalUnit("FUT_L2_UCACHE", 60, 55, 2.0));
+		functionalUnits.push(new FunctionalUnit("FUT_MMX", 70, 65, 5.0));
+		functionalUnits.push(new FunctionalUnit("FUT_VECTOR_ALU", 40, 35, 1.5));
+		functionalUnits.push(new FunctionalUnit("FUT_VECTOR_MUL", 60, 55, 2.1));
+		functionalUnits.push(new FunctionalUnit("FUT_VECTOR", 60, 55, 2.5));
 
 
 	}
