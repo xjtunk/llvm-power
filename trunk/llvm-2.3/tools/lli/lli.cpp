@@ -71,6 +71,7 @@ namespace {
 
 // ahmad changed this to extern from static
 ExecutionEngine *EE = 0;
+extern bool powerPassEnabled;
 
 static void do_shutdown() {
   delete EE;
@@ -83,6 +84,7 @@ static void do_shutdown() {
 int main(int argc, char **argv, char * const *envp) {
   // ahmad
   PassManager PM; 
+  powerPassEnabled=false;
 
   atexit(do_shutdown);  // Call llvm_shutdown() on exit.
   cl::ParseCommandLineOptions(argc, argv,
