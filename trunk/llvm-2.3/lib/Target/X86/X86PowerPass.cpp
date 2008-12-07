@@ -78,12 +78,15 @@ namespace {
           // Get the instruction's mask and OR it with the current mask.
           MachineInstr &MI=*it;
           gatingmask_t tempMask=X86InstrInfo::getGatingMask(&MI);
-///          cout << "Instruction: "<<MI<<"\treturned: "<<std::hex<<tempMask<<std::dec<<std::endl;
+          if(tempMask==(gatingmask_t)(-1))
+          {
+            cout << "\tWARNING: Instruction: "<<MI<<"\treturned: "<<std::hex<<tempMask<<std::dec<<std::endl;
+          }
           finalMask=tempMask|finalMask;
         }
       }
 ///      assert(~finalMask!=0 && "Mask is 0!\n");
-      cout<<"Finalmask: "<<std::hex<<finalMask<<std::endl;
+///      cout<<"Finalmask: "<<std::hex<<finalMask<<std::endl;
       insertGatingInstruction(finalMask, trace[0]->begin());
       printf("Done optimizing trace\n");
     }
