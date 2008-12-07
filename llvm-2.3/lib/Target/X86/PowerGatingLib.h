@@ -102,7 +102,7 @@
 	case X86::SUBSSrr:
 	case X86::SUBSSrr_Int:
 	case X86::INC16m: case X86::INC16r: case X86::INC32m: case X86::INC32r: case X86::INC64_16m: case X86::INC64_16r: case X86::INC64_32m: case X86::INC64_32r: case X86::INC64m: case X86::INC64r: case X86::INC8m: case X86::INC8r:
-		return turnOnFUT(4, FUT_INT_ADDER_ARITH, FUT_LOAD, FUT_STORE, FUT_AGU);
+		return turnOnFUT(4, FUT_INT_ADD_ARITH, FUT_LOAD, FUT_STORE, FUT_AGU);
 		break;
 
 	// Integer ALU Logical ops
@@ -192,7 +192,7 @@
 	case X86::XOR16mi: case X86::XOR16mi8: case X86::XOR16mr: case X86::XOR16ri: case X86::XOR16ri8: case X86::XOR16rm: case X86::XOR16rr: case X86::XOR32mi: case X86::XOR32mi8: case X86::XOR32mr: case X86::XOR32ri: case X86::XOR32ri8: case X86::XOR32rm: case X86::XOR32rr: case X86::XOR64mi32: case X86::XOR64mi8: case X86::XOR64mr: case X86::XOR64ri32: case X86::XOR64ri8: case X86::XOR64rm: case X86::XOR64rr: case X86::XOR8mi: case X86::XOR8mr: case X86::XOR8ri: case X86::XOR8rm: case X86::XOR8rr:
 	case X86::XORPDrm: case X86::XORPDrr:
 	case X86::XORPSrm: case X86::XORPSrr:
-		return turnOnFUT(4, FUT_INT_ADDER_LOGIC, FUT_LOAD, FUT_STORE, FUT_AGU);
+		return turnOnFUT(4, FUT_INT_ADD_LOGIC, FUT_LOAD, FUT_STORE, FUT_AGU);
 		break;
 
 	// Integer Multiply
@@ -217,7 +217,7 @@
 	case X86::MULSSrm_Int:
 	case X86::MULSSrr:
 	case X86::MULSSrr_Int:
-		return turnOnFUT(4, FUT_INT_MULTIPLIER, FUT_LOAD, FUT_STORE, FUT_AGU);
+		return turnOnFUT(4, FUT_INT_MUL, FUT_LOAD, FUT_STORE, FUT_AGU);
 		break;
 	
 	// Integer Divide
@@ -246,7 +246,7 @@
 	case X86::FpGET_ST0_32: case X86::FpGET_ST0_64: case X86::FpGET_ST0_80: case X86::FpGET_ST1_32: case X86::FpGET_ST1_64: case X86::FpGET_ST1_80: case X86::FpSET_ST0_32: case X86::FpSET_ST0_64: case X86::FpSET_ST0_80:
 	case X86::SUBR_F32m: case X86::SUBR_F64m: case X86::SUBR_FI16m: case X86::SUBR_FI32m: case X86::SUBR_FPrST0: case X86::SUBR_FST0r: case X86::SUBR_Fp32m: case X86::SUBR_Fp64m: case X86::SUBR_Fp64m32: case X86::SUBR_Fp80m32: case X86::SUBR_Fp80m64: case X86::SUBR_FpI16m32: case X86::SUBR_FpI16m64: case X86::SUBR_FpI16m80: case X86::SUBR_FpI32m32: case X86::SUBR_FpI32m64: case X86::SUBR_FpI32m80: case X86::SUBR_FrST0:
 	case X86::SUB_F32m: case X86::SUB_F64m: case X86::SUB_FI16m: case X86::SUB_FI32m: case X86::SUB_FPrST0: case X86::SUB_FST0r: case X86::SUB_Fp32: case X86::SUB_Fp32m: case X86::SUB_Fp64: case X86::SUB_Fp64m: case X86::SUB_Fp64m32: case X86::SUB_Fp80: case X86::SUB_Fp80m32: case X86::SUB_Fp80m64: case X86::SUB_FpI16m32: case X86::SUB_FpI16m64: case X86::SUB_FpI16m80: case X86::SUB_FpI32m32: case X86::SUB_FpI32m64: case X86::SUB_FpI32m80: case X86::SUB_FrST0:
-		return turnOnFUT(4, FUT_FP_ADDER, FUT_LOAD, FUT_STORE, FUT_AGU);
+		return turnOnFUT(4, FUT_FP_ADD, FUT_LOAD, FUT_STORE, FUT_AGU);
 		break;
 
 	// Floating Point Multiply
@@ -271,7 +271,7 @@
 	case X86::MUL_FpI32m64:
 	case X86::MUL_FpI32m80:
 	case X86::MUL_FrST0:
-		return turnOnFUT(4, FUT_FP_MULTIPLIER, FUT_LOAD, FUT_STORE, FUT_AGU);
+		return turnOnFUT(4, FUT_FP_MUL, FUT_LOAD, FUT_STORE, FUT_AGU);
 		break;
 
 	// Floating Point Divide
@@ -552,7 +552,7 @@
 	case X86::MOV_Fp8032:
 	case X86::MOV_Fp8064:
 	case X86::MOV_Fp8080:
-		return turnOnFUT(4, FUT_MOVER, FUT_LOAD, FUT_STORE, FUT_AGU);
+		return turnOnFUT(4, FUT_MOVE, FUT_LOAD, FUT_STORE, FUT_AGU);
 		break;
 
 	// Sets
@@ -584,7 +584,7 @@
 	case X86::SETPr:
 	case X86::SETSm:
 	case X86::SETSr:
-		return turnOnFUT(4, FUT_INT_ADDER_LOGIC, FUT_LOAD, FUT_STORE, FUT_AGU);
+		return turnOnFUT(4, FUT_SET, FUT_LOAD, FUT_STORE, FUT_AGU);
 		break;
 
 	// Test Operands ops
@@ -786,9 +786,81 @@
 	case X86::PHADDWrm64:
 	case X86::PHADDWrr128:
 	case X86::PHADDWrr64:
+	case X86::PADDBrm:
+	case X86::PADDBrr:
+	case X86::PADDDrm:
+	case X86::PADDDrr:
+	case X86::PADDQrm:
+	case X86::PADDQrr:
+	case X86::PADDSBrm:
+	case X86::PADDSBrr:
+	case X86::PADDSWrm:
+	case X86::PADDSWrr:
+	case X86::PADDUSBrm:
+	case X86::PADDUSBrr:
+	case X86::PADDUSWrm:
+	case X86::PADDUSWrr:
+	case X86::PADDWrm:
+	case X86::PADDWrr:
+	case X86::PANDNrm:
+	case X86::PANDNrr:
+	case X86::PANDrm:
+	case X86::PANDrr:
+	case X86::PHSUBDrm128:
+	case X86::PHSUBDrm64:
+	case X86::PHSUBDrr128:
+	case X86::PHSUBDrr64:
+	case X86::PHSUBSWrm128:
+	case X86::PHSUBSWrm64:
+	case X86::PHSUBSWrr128:
+	case X86::PHSUBSWrr64:
+	case X86::PHSUBWrm128:
+	case X86::PHSUBWrm64:
+	case X86::PHSUBWrr128:
+	case X86::PHSUBWrr64:
+	case X86::PSUBBrm:
+	case X86::PSUBBrr:
+	case X86::PSUBDrm:
+	case X86::PSUBDrr:
+	case X86::PSUBQrm:
+	case X86::PSUBQrr:
+	case X86::PSUBSBrm:
+	case X86::PSUBSBrr:
+	case X86::PSUBSWrm:
+	case X86::PSUBSWrr:
+	case X86::PSUBUSBrm:
+	case X86::PSUBUSBrr:
+	case X86::PSUBUSWrm:
+	case X86::PSUBUSWrr:
+	case X86::PSUBWrm:
+	case X86::PSUBWrr:
+	case X86::PXORrm:
+	case X86::PXORrr:
 		return turnOnFUT(4, FUT_VECTOR_ALU, FUT_LOAD, FUT_STORE, FUT_AGU);
 		break;
 	
+	// Vector Multiply
+	case X86::PMULDQrm:
+	case X86::PMULDQrr:
+	case X86::PMULHRSWrm128:
+	case X86::PMULHRSWrm64:
+	case X86::PMULHRSWrr128:
+	case X86::PMULHRSWrr64:
+	case X86::PMULHUWrm:
+	case X86::PMULHUWrr:
+	case X86::PMULHWrm:
+	case X86::PMULHWrr:
+	case X86::PMULLDrm:
+	case X86::PMULLDrm_int:
+	case X86::PMULLDrr:
+	case X86::PMULLDrr_int:
+	case X86::PMULLWrm:
+	case X86::PMULLWrr:
+	case X86::PMULUDQrm:
+	case X86::PMULUDQrr:
+		return turnOnFUT(4, FUT_VECTOR_MUL, FUT_LOAD, FUT_STORE, FUT_AGU);
+		break;
+
 	// General Vector Stuff
 	case X86::PABSBrm128:
 	case X86::PABSBrm64:
@@ -810,30 +882,10 @@
 	case X86::PACKUSDWrr:
 	case X86::PACKUSWBrm:
 	case X86::PACKUSWBrr:
-	case X86::PADDBrm:
-	case X86::PADDBrr:
-	case X86::PADDDrm:
-	case X86::PADDDrr:
-	case X86::PADDQrm:
-	case X86::PADDQrr:
-	case X86::PADDSBrm:
-	case X86::PADDSBrr:
-	case X86::PADDSWrm:
-	case X86::PADDSWrr:
-	case X86::PADDUSBrm:
-	case X86::PADDUSBrr:
-	case X86::PADDUSWrm:
-	case X86::PADDUSWrr:
-	case X86::PADDWrm:
-	case X86::PADDWrr:
 	case X86::PALIGNR128rm:
 	case X86::PALIGNR128rr:
 	case X86::PALIGNR64rm:
 	case X86::PALIGNR64rr:
-	case X86::PANDNrm:
-	case X86::PANDNrr:
-	case X86::PANDrm:
-	case X86::PANDrr:
 	case X86::PAVGBrm:
 	case X86::PAVGBrr:
 	case X86::PAVGWrm:
@@ -866,18 +918,6 @@
 	case X86::PEXTRWri:
 	case X86::PHMINPOSUWrm128:
 	case X86::PHMINPOSUWrr128:
-	case X86::PHSUBDrm128:
-	case X86::PHSUBDrm64:
-	case X86::PHSUBDrr128:
-	case X86::PHSUBDrr64:
-	case X86::PHSUBSWrm128:
-	case X86::PHSUBSWrm64:
-	case X86::PHSUBSWrr128:
-	case X86::PHSUBSWrr64:
-	case X86::PHSUBWrm128:
-	case X86::PHSUBWrm64:
-	case X86::PHSUBWrr128:
-	case X86::PHSUBWrr64:
 	case X86::PINSRBrm:
 	case X86::PINSRBrr:
 	case X86::PINSRDrm:
@@ -941,24 +981,6 @@
 	case X86::PMOVZXWDrr:
 	case X86::PMOVZXWQrm:
 	case X86::PMOVZXWQrr:
-	case X86::PMULDQrm:
-	case X86::PMULDQrr:
-	case X86::PMULHRSWrm128:
-	case X86::PMULHRSWrm64:
-	case X86::PMULHRSWrr128:
-	case X86::PMULHRSWrr64:
-	case X86::PMULHUWrm:
-	case X86::PMULHUWrr:
-	case X86::PMULHWrm:
-	case X86::PMULHWrr:
-	case X86::PMULLDrm:
-	case X86::PMULLDrm_int:
-	case X86::PMULLDrr:
-	case X86::PMULLDrr_int:
-	case X86::PMULLWrm:
-	case X86::PMULLWrr:
-	case X86::PMULUDQrm:
-	case X86::PMULUDQrr:
 	case X86::PSHUFBrm128:
 	case X86::PSHUFBrm64:
 	case X86::PSHUFBrr128:
@@ -1007,26 +1029,8 @@
 	case X86::PSRLWri:
 	case X86::PSRLWrm:
 	case X86::PSRLWrr:
-	case X86::PSUBBrm:
-	case X86::PSUBBrr:
-	case X86::PSUBDrm:
-	case X86::PSUBDrr:
-	case X86::PSUBQrm:
-	case X86::PSUBQrr:
-	case X86::PSUBSBrm:
-	case X86::PSUBSBrr:
-	case X86::PSUBSWrm:
-	case X86::PSUBSWrr:
-	case X86::PSUBUSBrm:
-	case X86::PSUBUSBrr:
-	case X86::PSUBUSWrm:
-	case X86::PSUBUSWrr:
-	case X86::PSUBWrm:
-	case X86::PSUBWrr:
 	case X86::PTESTrm:
 	case X86::PTESTrr:
-	case X86::PXORrm:
-	case X86::PXORrr:
 		return turnOnFUT(4, FUT_VECTOR, FUT_LOAD, FUT_STORE, FUT_AGU);
 		break;
 
@@ -1099,7 +1103,7 @@
 	case X86::SHRD64mri8:
 	case X86::SHRD64rrCL:
 	case X86::SHRD64rri8:
-		return turnOnFUT(4, FUT_LOAD, FUT_STORE, FUT_AGU, FUT_INT_SHIFTER);
+		return turnOnFUT(4, FUT_LOAD, FUT_STORE, FUT_AGU, FUT_INT_SHIFT);
 		break;
 	
 	// Complex Math ops
@@ -1127,7 +1131,7 @@
 	case X86::SQRT_Fp32:
 	case X86::SQRT_Fp64:
 	case X86::SQRT_Fp80:
-		return turnOnFUT(6, FUT_FP_SQRT, FUT_FP_MULTIPLIER, FUT_FP_ADDER, FUT_LOAD, FUT_STORE, FUT_AGU);
+		return turnOnFUT(6, FUT_FP_SQRT, FUT_FP_MUL, FUT_FP_ADD, FUT_LOAD, FUT_STORE, FUT_AGU);
 		break;
 
 	// Unimplemented ops
