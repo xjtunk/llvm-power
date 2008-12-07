@@ -162,30 +162,6 @@
 	case X86::ORPDrr:
 	case X86::ORPSrm:
 	case X86::ORPSrr:
-	case X86::ROR16m1:
-	case X86::ROR16mCL:
-	case X86::ROR16mi:
-	case X86::ROR16r1:
-	case X86::ROR16rCL:
-	case X86::ROR16ri:
-	case X86::ROR32m1:
-	case X86::ROR32mCL:
-	case X86::ROR32mi:
-	case X86::ROR32r1:
-	case X86::ROR32rCL:
-	case X86::ROR32ri:
-	case X86::ROR64m1:
-	case X86::ROR64mCL:
-	case X86::ROR64mi:
-	case X86::ROR64r1:
-	case X86::ROR64rCL:
-	case X86::ROR64ri:
-	case X86::ROR8m1:
-	case X86::ROR8mCL:
-	case X86::ROR8mi:
-	case X86::ROR8r1:
-	case X86::ROR8rCL:
-	case X86::ROR8ri:
 	case X86::AND16mi: case X86::AND16mi8: case X86::AND16mr: case X86::AND16ri: case X86::AND16ri8: case X86::AND16rm: case X86::AND16rr: case X86::AND32mi: case X86::AND32mi8: case X86::AND32mr: case X86::AND32ri: case X86::AND32ri8: case X86::AND32rm: case X86::AND32rr: case X86::AND64mi32: case X86::AND64mi8: case X86::AND64mr: case X86::AND64ri32: case X86::AND64ri8: case X86::AND64rm: case X86::AND64rr: case X86::AND8mi: case X86::AND8mr: case X86::AND8ri: case X86::AND8rm: case X86::AND8rr:
 	case X86::ANDNPDrm: case X86::ANDNPDrr:
 	case X86::ANDNPSrm: case X86::ANDNPSrr:
@@ -1115,6 +1091,54 @@
 	case X86::SHRD64mri8:
 	case X86::SHRD64rrCL:
 	case X86::SHRD64rri8:
+	case X86::ROL16m1:
+	case X86::ROL16mCL:
+	case X86::ROL16mi:
+	case X86::ROL16r1:
+	case X86::ROL16rCL:
+	case X86::ROL16ri:
+	case X86::ROL32m1:
+	case X86::ROL32mCL:
+	case X86::ROL32mi:
+	case X86::ROL32r1:
+	case X86::ROL32rCL:
+	case X86::ROL32ri:
+	case X86::ROL64m1:
+	case X86::ROL64mCL:
+	case X86::ROL64mi:
+	case X86::ROL64r1:
+	case X86::ROL64rCL:
+	case X86::ROL64ri:
+	case X86::ROL8m1:
+	case X86::ROL8mCL:
+	case X86::ROL8mi:
+	case X86::ROL8r1:
+	case X86::ROL8rCL:
+	case X86::ROL8ri:
+	case X86::ROR16m1:
+	case X86::ROR16mCL:
+	case X86::ROR16mi:
+	case X86::ROR16r1:
+	case X86::ROR16rCL:
+	case X86::ROR16ri:
+	case X86::ROR32m1:
+	case X86::ROR32mCL:
+	case X86::ROR32mi:
+	case X86::ROR32r1:
+	case X86::ROR32rCL:
+	case X86::ROR32ri:
+	case X86::ROR64m1:
+	case X86::ROR64mCL:
+	case X86::ROR64mi:
+	case X86::ROR64r1:
+	case X86::ROR64rCL:
+	case X86::ROR64ri:
+	case X86::ROR8m1:
+	case X86::ROR8mCL:
+	case X86::ROR8mi:
+	case X86::ROR8r1:
+	case X86::ROR8rCL:
+	case X86::ROR8ri:
 		return turnOnFUT(4, FUT_LOAD, FUT_STORE, FUT_AGU, FUT_INT_SHIFT);
 		break;
 	
@@ -1418,30 +1442,6 @@
 	case X86::REP_STOSD:
 	case X86::REP_STOSQ:
 	case X86::REP_STOSW:
-	case X86::ROL16m1:
-	case X86::ROL16mCL:
-	case X86::ROL16mi:
-	case X86::ROL16r1:
-	case X86::ROL16rCL:
-	case X86::ROL16ri:
-	case X86::ROL32m1:
-	case X86::ROL32mCL:
-	case X86::ROL32mi:
-	case X86::ROL32r1:
-	case X86::ROL32rCL:
-	case X86::ROL32ri:
-	case X86::ROL64m1:
-	case X86::ROL64mCL:
-	case X86::ROL64mi:
-	case X86::ROL64r1:
-	case X86::ROL64rCL:
-	case X86::ROL64ri:
-	case X86::ROL8m1:
-	case X86::ROL8mCL:
-	case X86::ROL8mi:
-	case X86::ROL8r1:
-	case X86::ROL8rCL:
-	case X86::ROL8ri:
 	case X86::ROUNDPDm_Int:
 	case X86::ROUNDPDr_Int:
 	case X86::ROUNDPSm_Int:
