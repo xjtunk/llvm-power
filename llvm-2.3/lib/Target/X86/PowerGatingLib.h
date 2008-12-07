@@ -351,7 +351,7 @@
 	case X86::IN32rr: 
 	case X86::IN8ri: 
 	case X86::IN8rr:
-		return turnOnFUT(2, FUT_INT_LOAD, FUT_AGU);
+		return turnOnFUT(2, FUT_LOAD, FUT_AGU);
 		break;
 
 	// Branches and Jumps
