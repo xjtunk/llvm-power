@@ -1,5 +1,15 @@
-	// No Op
+	// No Op and other "fake" Instructions
 	case X86::NOOP:
+	case X86::PHI:
+	case X86::INLINEASM:
+	case X86::LABEL:
+	case X86::DECLARE:
+	case X86::EXTRACT_SUBREG:
+	case X86::INSERT_SUBREG:
+	case X86::IMPLICIT_DEF:
+	case X86::SUBREG_TO_REG:
+	case X86::ADJCALLSTACKDOWN:
+	case X86::ADJCALLSTACKUP:
 		return turnOnFUT(FUT_NONE);
 		break;
 
@@ -1137,16 +1147,6 @@
 		break;
 
 	// Unimplemented ops
-	case X86::PHI:
-	case X86::INLINEASM:
-	case X86::LABEL:
-	case X86::DECLARE:
-	case X86::EXTRACT_SUBREG:
-	case X86::INSERT_SUBREG:
-	case X86::IMPLICIT_DEF:
-	case X86::SUBREG_TO_REG:
-	case X86::ADJCALLSTACKDOWN:
-	case X86::ADJCALLSTACKUP:
 	case X86::ABS_F:
 	case X86::ABS_Fp32:
 	case X86::ABS_Fp64:
