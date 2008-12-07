@@ -241,9 +241,28 @@ namespace {
 ///      MachineInstr * MI = BuildMI(*(I->getParent()), I, TII->get(X86::AND32rr), X86::EBX);
 ///      MI->addOperand(MachineOperand::CreateReg(X86::EBX, false));
 ///      MI->addOperand(MachineOperand::CreateReg(X86::EBX, false));
+	
+		// get first instruction
+		MachineInstr * MIfirst = I;
 
-      MachineInstr * MI = BuildMI(*(I->getParent()), I, TII->get(X86::GATE)).addImm(bitVector);
-    }
+		// check if this instruction is a gating instruction
+		if (MIfirst->getOpcode() == X86::GATE) {
+			gatingmask_t mask = X86InstrInfo::getGatingImm(MIfirst);
+			if (mask != (gatingmask_t)(-1)) {
+				//if the bitvector is NOT 0xFFFFFFFFFFFFFFFF DO NOT allow new gating mask
+				return;
+			}
+			else {
+				// else OVERWRITE the old gating mask
+				MIfirst->getOperand(0).setImm(bitVector);
+			}
+		}
+
+		// else add the gating mask
+		else {
+			MachineInstr * MI = BuildMI(*(I->getParent()), I, TII->get(X86::GATE)).addImm(bitVector);
+		}
+	}
 
     void duplicateToTop(unsigned RegNo, unsigned AsReg, MachineInstr *I) {
       unsigned STReg = getSTReg(RegNo);
