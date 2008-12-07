@@ -6,7 +6,7 @@
 //
 
 #include <globals.h>
-#include <ptlsim.h>
+#include <ptlsim.h> 
 #include <datastore.h>
 #define CPT_STATS
 #include <stats.h>
@@ -25,6 +25,7 @@ PTLsimStats stats;
 ostream logfile;
 bool logenable = 0;
 W64 sim_cycle = 0;
+W64 total_cycle = 0;
 W64 unhalted_cycle_count = 0;
 W64 iterations = 0;
 W64 total_uops_executed = 0;
@@ -544,9 +545,7 @@ void update_progress() {
 FunctionalUnitManager* FUM;
 bool simulate(const char* machinename) {
   PTLsimMachine* machine = PTLsimMachine::getmachine(machinename);
-	cerr << "Building FUM" ,endl, flush;
-	FUM = new FunctionalUnitManager("/net/hp95/uarch/users/jkron3/llvm-power/llvm-2.3/ptlsim/fu.txt");
-	cerr << "Completed Building FUM", endl, flush;
+
   if (!machine) {
     logfile << "Cannot find core named '", machinename, "'", endl;
     cerr << "Cannot find core named '", machinename, "'", endl;
@@ -586,7 +585,8 @@ bool simulate(const char* machinename) {
   stringbuf sb;
   sb << endl, "Stopped after ", sim_cycle, " cycles, ", total_user_insns_committed, " instructions and ",
     seconds, " seconds of sim time (", W64(double(sim_cycle) / double(seconds)), " Hz sim rate)", endl;
-
+	
+	
   logfile << sb, flush;
   cerr << sb, flush;
 
@@ -605,7 +605,7 @@ bool simulate(const char* machinename) {
   update_progress();
   cerr << endl;
 #endif
-
+	
   return 0;
 }
 

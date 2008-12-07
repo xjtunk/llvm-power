@@ -21,6 +21,7 @@
 #include <datastore.h>
 
 extern W64 sim_cycle;
+extern W64 total_cycle;
 extern W64 unhalted_cycle_count;
 extern W64 total_uops_committed;
 extern W64 total_user_insns_committed;

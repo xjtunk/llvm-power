@@ -35,24 +35,7 @@ enum FunctionalUnitStatus
 class FunctionalUnit
 {
 public:
-	FunctionalUnit(char* _name, tick_t _onLatency, tick_t _offLatency, power_t _onPower)
-		: name(_name), onPower(_onPower), offLatency(_offLatency), onLatency(_onLatency)
-		{
-			//state attributes
-			status=FUS_ON;
-			nextClock = 0;
-			onTime = 0;
-			transitionTime = 0;
-			
-			//stats
-			totalPower = 0;
-			totalOnTime = 0;
-			totalOffTime = 0;
-			totalOnTransitionTime = 0;
-			totalOffTransitionTime = 0;
-			
-			decodeStatus = false;
-		}
+	FunctionalUnit(char* _name, tick_t _onLatency, tick_t _offLatency, power_t _onPower);
 
 
 	//Interface Methods
@@ -68,6 +51,8 @@ public:
 	//stats
 	char* getName() {return name; }
 	
+	bool isValid(){ return valid;}
+	
 	power_t getTotalPower(const time_t &now) 
 	{
 		synchronize(now);
@@ -80,6 +65,11 @@ public:
 	}//dont forget about time spent on
 	
 	
+	double getPowerNotOptimized(const tick_t &now)
+	{
+		return (double)now*onPower;
+	
+	}
 	
 	tick_t getTimeSpentOn(const tick_t &now) {
 		synchronize(now);
@@ -131,6 +121,8 @@ private:
   tick_t totalOffTime;
   tick_t totalOnTransitionTime;
   tick_t totalOffTransitionTime;
+  
+  bool valid;
   
 };
 
