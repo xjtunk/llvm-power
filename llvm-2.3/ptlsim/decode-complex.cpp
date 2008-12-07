@@ -2344,6 +2344,7 @@ bool TraceDecoder::decode_complex() {
   }
 
   case 0x137: { // 0f 37: PTL undocumented opcode
+    assert(0);
     EndOfDecode();
     microcode_assist(ASSIST_PTLCALL, ripstart, rip);      
     end_of_block = 1;

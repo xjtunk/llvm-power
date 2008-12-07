@@ -822,7 +822,7 @@ struct SequentialCore {
       if unlikely (cmtrec) {
         data = transactmem.load(state.physaddr << 3);
       } else {
-        logfile << "[cycle ", sim_cycle, "] load from physaddr ", (void*)physaddr, " for virtaddr ", (void*)origaddr, endl;
+///        logfile << "[cycle ", sim_cycle, "] load from physaddr ", (void*)physaddr, " for virtaddr ", (void*)origaddr, endl;
         data = loadphys(physaddr);
       }
     }
