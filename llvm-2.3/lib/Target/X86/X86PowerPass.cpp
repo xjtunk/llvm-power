@@ -65,7 +65,7 @@ namespace {
       }
     }
 
-    void optimizeTrace(std::vector<MachineBasicBlock*> & trace)
+    void optimizeTrace(std::vector<MachineBasicBlock*> & trace, MachineLoop * ml=NULL)
     {
       std::set<MachineBasicBlock*> traceSet;
 
@@ -90,7 +90,17 @@ namespace {
       }
 ///      assert(~finalMask!=0 && "Mask is 0!\n");
       cout<<"Finalmask: "<<std::hex<<finalMask<<std::endl;
-      insertGatingInstruction(finalMask, trace[0]->begin());
+      if(ml!=NULL)
+      {
+        MachineBasicBlock * preheader=ml->getLoopPreheader();
+        insertGatingInstruction(finalMask, preheader->begin());
+        cout<<"Optimizing LOOP... moving instruction in the PRE-HEADER"<<std::endl;
+      }
+      else
+      {
+        insertGatingInstruction(finalMask, trace[0]->begin());
+        cout<<"Optimizing ACYCLIC... moving instruction in the PRE-HEADER"<<std::endl;
+      }
       printf("Done optimizing trace\n");
 
       // Let's change the off-trace to be correct.
@@ -142,7 +152,7 @@ namespace {
         printTrace(trace);
 ///        printMachineLoop(ml);
         // Let's optimize the trace here...
-        optimizeTrace(trace);
+        optimizeTrace(trace, ml);
       }
       else
       {
