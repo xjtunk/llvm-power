@@ -136,6 +136,8 @@ public:
 	void processAtCommit(const mask_t &mask, const tick_t &now);
 	void processAtFlush(const mask_t &mask, const tick_t &now);
 	
+	void initializationComplete(const tick_t &now);
+	
 	//Stats
 	power_t getTotalPower(const tick_t &now);
 
@@ -170,7 +172,8 @@ private:
   void synchronize(const tick_t &now);
   void synchronize(const unsigned long &unitNumber, const tick_t &now);
 
-	
+	tick_t initializationTime;
+	tick_t offset;
 
 
 };

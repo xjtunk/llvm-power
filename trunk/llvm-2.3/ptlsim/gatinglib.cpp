@@ -32,24 +32,32 @@ void FunctionalUnitManager::processAtIssue(const mask_t &mask, const tick_t &now
 {
 	int i;
 	mask_t _mask = mask; 
+	tick_t realTime = now - offset;
 	for(i = 0; i < functionalUnits.size(); i++)
 	{
 	
 		if(_mask & 0x1)
 		{
 			cerr<<"Turning on functional unit "<<functionalUnits[i]->getName()<<endl;
-			functionalUnits[i]->turnOn(now);	
+			functionalUnits[i]->turnOn(realTime);	
 		//	functionalUnits[i]->updateInPipeline(); //indicate that a turnon has been dispatched but not commited
 		}
 		else
 		{
 			cerr<<"Turning off functional unit "<<functionalUnits[i]->getName()<<endl;
-			functionalUnits[i]->turnOff(now);
+			functionalUnits[i]->turnOff(realTime);
 		}
 		_mask >>= 1;
 	}
 	
 	
+}
+
+void FunctionalUnitManager::initializationComplete(const tick_t &now)
+{
+	offset = now;
+	initializationTime = now;
+
 }
 
 void FunctionalUnitManager::processAtCommit(const mask_t &mask, const tick_t &now)
@@ -422,6 +430,7 @@ void FunctionalUnitManager::dumpStats(const tick_t &now)
 	stringbuf sb;
 	double totalPower = 0;
 	double totalPowerNoOptimized = 0;
+	tick_t realTime = now - offset;
   for( unsigned int i=0 ; i<functionalUnits.size() ; i++ )
   {
   	FunctionalUnit* FU = functionalUnits[i];
@@ -429,12 +438,12 @@ void FunctionalUnitManager::dumpStats(const tick_t &now)
   	if(FU->isValid())
   	{
 			sb<<"Functional Unit: ",					FU->getName(), endl;
-			sb<<"\tTotalPower: ",							FU->getTotalPower(now), endl;
-			sb<<"\tTotalOnTime: ",						FU->getTimeSpentOn(now), endl;
-			sb<<"\tTotalOffTime:",						FU->getTimeSpentOff(now), endl;
+			sb<<"\tTotalPower: ",							FU->getTotalPower(realTime), endl;
+			sb<<"\tTotalOnTime: ",						FU->getTimeSpentOn(realTime), endl;
+			sb<<"\tTotalOffTime:",						FU->getTimeSpentOff(realTime), endl;
 			sb<<"\tTotalOnTransitionTime: ",	FU->getTimeInOnTransition(), endl;
 			sb<<"\tTotalOffTransitionTime: ",	FU->getTimeInOffTransition(), endl;
-			sb<<"\tPercent Time On: ",				(double)(FU->getTimeSpentOn(now)/(double)now), endl;
+			sb<<"\tPercent Time On: ",				(double)(FU->getTimeSpentOn(realTime)/(double)realTime), endl;
 			
 			
 			totalPower += FU->getTotalPower(now);
@@ -442,8 +451,8 @@ void FunctionalUnitManager::dumpStats(const tick_t &now)
   	}
   }
   
-  
-  sb<<"Total Power Consumed: ", totalPower, " in ",now,endl;
+  sb<<"Initialization Time: ", initializationTime, endl;
+  sb<<"Total Power Consumed: ", totalPower, " in ",realTime,endl;
   sb<<"Total Non-Optimized Power: ", totalPowerNoOptimized, endl;
   sb<<"Percent Power Utlization: ", totalPower/totalPowerNoOptimized*(double)100,endl;
   cerr<<sb, flush;

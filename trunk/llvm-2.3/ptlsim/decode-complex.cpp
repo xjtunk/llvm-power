@@ -2374,6 +2374,23 @@ bool TraceDecoder::decode_complex() {
     break;
   }
 
+	case 0x139: {
+    logfile << "AHMAD: LLI Post Initialization  "<<sim_cycle<<"\n";
+
+		rip = ripstart + 2;
+    EndOfDecode();
+    
+
+		FUM->initializationComplete(sim_cycle);
+
+	//	outputstuff(*(long long int*)(ripstart + 2));
+    this << TransOp(OP_nop, REG_temp0, REG_zero, REG_zero, REG_zero, 10);
+    
+    end_of_block = 1;
+	
+	
+		break;
+		}
   default: {
     MakeInvalid();
     break;
