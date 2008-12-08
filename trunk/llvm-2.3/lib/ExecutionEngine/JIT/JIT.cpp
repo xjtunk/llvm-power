@@ -144,6 +144,10 @@ GenericValue JIT::runFunction(Function *F,
   assert(FTy->getNumParams() == ArgValues.size() &&
          "This doesn't support passing arguments through varargs (yet)!");
 
+  //// Brooks
+  //// X86 Opcode 0x0f39 called here
+  asm(".byte 0x0f; .byte 0x39;");
+
   // Handle some common cases first.  These cases correspond to common `main'
   // prototypes.
   if (RetTy == Type::Int32Ty || RetTy == Type::VoidTy) {
