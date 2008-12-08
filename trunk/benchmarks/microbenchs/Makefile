@@ -1,7 +1,7 @@
 CC=llvm-gcc
 CFLAGS=-emit-llvm -static
 LDFLAGS=
-SOURCES=loop.cpp manycalls.cpp dynamic.cpp multiloops.cpp
+SOURCES=loop.cpp manycalls.cpp dynamic.cpp multiloops.cpp simpleloop.cpp
 OBJECTS=$(SOURCES:.cpp=.bc)
 GRAPH_OBJECTS=$(SOURCES:.cpp=.ps)
 ###EXECUTABLE=hello
