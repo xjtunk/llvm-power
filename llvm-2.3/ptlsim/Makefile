@@ -68,7 +68,12 @@ ifdef PTLSIM_HYPERVISOR
 CFLAGS += -fpic -mno-red-zone
 endif
 
+host-name := $(shell hostname)
+ifeq "$(host-name)" "masta"
+CFLAGS += -fno-trapping-math -fno-exceptions -fno-rtti -funroll-loops -mpreferred-stack-boundary=4 -fno-strict-aliasing -Wreturn-type $(GCCVER_SPECIFIC)
+else
 CFLAGS += -fno-trapping-math -fno-exceptions -fno-rtti -fno-stack-protector -funroll-loops -mpreferred-stack-boundary=4 -fno-strict-aliasing -Wreturn-type $(GCCVER_SPECIFIC)
+endif
 
 
 BASEOBJS = superstl.o config.o mathlib.o syscalls.o

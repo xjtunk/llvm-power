@@ -5,7 +5,12 @@
 void break_fn(W64 mask);
 
 int main(int argc, char *argv[])
-{
+{	
+	int n, k;
+	for(k= 0; k < 1000; k++)
+		n = n + 1;
+	printf("N = %d", n);
+	asm(".byte 0x0f; .byte 0x39");
 ///  ptlcall_marker(7);
 	printf("Start\n");
  break_fn(0);
@@ -28,5 +33,5 @@ void break_fn(W64 mask)
 	for(i = 0; i < 1000; i++)
 		j = j+1;
 	GATE_INSTR(0xF0, 0xF0);
-	printf("J = ", j);
+	printf("J = %d", j);
 }
