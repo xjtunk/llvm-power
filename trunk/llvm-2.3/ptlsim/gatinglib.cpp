@@ -31,7 +31,7 @@ FunctionalUnit::FunctionalUnit(char* _name, tick_t _onLatency, tick_t _offLatenc
 void FunctionalUnitManager::processAtIssue(const mask_t &mask, const tick_t &now)
 {
 	int i;
-	mask_t _mask = mask; 
+	mask_t _mask = mask >> 1; 
 	tick_t realTime = now - offset;
 	for(i = 0; i < functionalUnits.size(); i++)
 	{
