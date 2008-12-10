@@ -27,7 +27,25 @@ FunctionalUnit::FunctionalUnit(char* _name, tick_t _onLatency, tick_t _offLatenc
 	decodeStatus = false;
 	valid = false;
 }
-
+FunctionalUnit::FunctionalUnit(char* _name, tick_t _onLatency, tick_t _offLatency, power_t _onPower, bool _valid)
+		: name(_name), onPower(_onPower), offLatency(_offLatency), onLatency(_onLatency)
+{
+	//state attributes
+	status=FUS_ON;
+	nextClock = 0;
+	onTime = 0;
+	transitionTime = 0;
+	
+	//stats
+	totalPower = 0;
+	totalOnTime = 0;
+	totalOffTime = 0;
+	totalOnTransitionTime = 0;
+	totalOffTransitionTime = 0;
+	
+	decodeStatus = false;
+	valid = _valid;
+}
 void FunctionalUnitManager::processAtIssue(const mask_t &mask, const tick_t &now)
 {
 	int i;
@@ -329,22 +347,22 @@ void FunctionalUnit::synchronize(const tick_t &now)
 
 FunctionalUnitManager::FunctionalUnitManager(const char * filename)
 	{
-    functionalUnits.push(new FunctionalUnit("FUT_INT_ADD_ARITH", 10, 8, .5));
-    functionalUnits.push(new FunctionalUnit("FUT_INT_ADD_LOGIC", 7, 5, .3));
-    functionalUnits.push(new FunctionalUnit("FUT_INT_SHIFT", 6, 3, .2));
-    functionalUnits.push(new FunctionalUnit("FUT_INT_MUL", 30, 25, 2));
+    functionalUnits.push(new FunctionalUnit("FUT_INT_ADD_ARITH", 10, 8, .5, 1));
+    functionalUnits.push(new FunctionalUnit("FUT_INT_ADD_LOGIC", 7, 5, .3, 1));
+    functionalUnits.push(new FunctionalUnit("FUT_INT_SHIFT", 6, 3, .2, 1));
+    functionalUnits.push(new FunctionalUnit("FUT_INT_MUL", 30, 25, 2, 1));
     functionalUnits.push(new FunctionalUnit("FUT_INT_DIV", 35, 33, 2));
     functionalUnits.push(new FunctionalUnit("FUT_FP_ADD", 20, 18, 1.3));
     functionalUnits.push(new FunctionalUnit("FUT_FP_MUL", 45, 40, 1.5));
     functionalUnits.push(new FunctionalUnit("FUT_FP_DIV", 60, 50, 1.8));
     functionalUnits.push(new FunctionalUnit("FUT_FP_SQRT", 60, 50, 1.8));
-    functionalUnits.push(new FunctionalUnit("FUT_LOAD", 18,15, .8));
-    functionalUnits.push(new FunctionalUnit("FUT_STORE",18,15, .8));
-    functionalUnits.push(new FunctionalUnit("FUT_AGU", 8, 5, .2));
-		functionalUnits.push(new FunctionalUnit("FUT_BRANCH", 25, 20, .95));
-		functionalUnits.push(new FunctionalUnit("FUT_MOVE", 6, 3, .2));
-		functionalUnits.push(new FunctionalUnit("FUT_SET", 5, 2, .2));
-		functionalUnits.push(new FunctionalUnit("FUT_CMP", 10,8, .6));
+    functionalUnits.push(new FunctionalUnit("FUT_LOAD", 18,15, .8,1));
+    functionalUnits.push(new FunctionalUnit("FUT_STORE",18,15, .8,1));
+    functionalUnits.push(new FunctionalUnit("FUT_AGU", 8, 5, .2,1));
+		functionalUnits.push(new FunctionalUnit("FUT_BRANCH", 25, 20, .95,1));
+		functionalUnits.push(new FunctionalUnit("FUT_MOVE", 6, 3, .2,1));
+		functionalUnits.push(new FunctionalUnit("FUT_SET", 5, 2, .2,1));
+		functionalUnits.push(new FunctionalUnit("FUT_CMP", 10,8, .6,1));
     functionalUnits.push(new FunctionalUnit("FUT_L1_DCACHE", 30, 26, 1.2));
     functionalUnits.push(new FunctionalUnit("FUT_L2_UCACHE", 60, 55, 2.0));
 		functionalUnits.push(new FunctionalUnit("FUT_MMX", 70, 65, 5.0));
