@@ -1107,6 +1107,30 @@
 		break;
 
 	// Shift ops
+	case X86::SAR16m1:
+	case X86::SAR16mCL:
+	case X86::SAR16mi:
+	case X86::SAR16r1:
+	case X86::SAR16rCL:
+	case X86::SAR16ri:
+	case X86::SAR32m1:
+	case X86::SAR32mCL:
+	case X86::SAR32mi:
+	case X86::SAR32r1:
+	case X86::SAR32rCL:
+	case X86::SAR32ri:
+	case X86::SAR64m1:
+	case X86::SAR64mCL:
+	case X86::SAR64mi:
+	case X86::SAR64r1:
+	case X86::SAR64rCL:
+	case X86::SAR64ri:
+	case X86::SAR8m1:
+	case X86::SAR8mCL:
+	case X86::SAR8mi:
+	case X86::SAR8r1:
+	case X86::SAR8rCL:
+	case X86::SAR8ri:
 	case X86::SHL16m1:
 	case X86::SHL16mCL:
 	case X86::SHL16mi:
@@ -1467,30 +1491,6 @@
 	case X86::RSQRTSSr:
 	case X86::RSQRTSSr_Int:
 	case X86::SAHF:
-	case X86::SAR16m1:
-	case X86::SAR16mCL:
-	case X86::SAR16mi:
-	case X86::SAR16r1:
-	case X86::SAR16rCL:
-	case X86::SAR16ri:
-	case X86::SAR32m1:
-	case X86::SAR32mCL:
-	case X86::SAR32mi:
-	case X86::SAR32r1:
-	case X86::SAR32rCL:
-	case X86::SAR32ri:
-	case X86::SAR64m1:
-	case X86::SAR64mCL:
-	case X86::SAR64mi:
-	case X86::SAR64r1:
-	case X86::SAR64rCL:
-	case X86::SAR64ri:
-	case X86::SAR8m1:
-	case X86::SAR8mCL:
-	case X86::SAR8mi:
-	case X86::SAR8r1:
-	case X86::SAR8rCL:
-	case X86::SAR8ri:
 	case X86::SBB32mi:
 	case X86::SBB32mi8:
 	case X86::SBB32mr:
