@@ -2344,7 +2344,6 @@ bool TraceDecoder::decode_complex() {
   }
 
   case 0x137: { // 0f 37: PTL undocumented opcode
-    assert(0);
     EndOfDecode();
     microcode_assist(ASSIST_PTLCALL, ripstart, rip);      
     end_of_block = 1;
@@ -2378,6 +2377,7 @@ bool TraceDecoder::decode_complex() {
     logfile << "AHMAD: LLI Post Initialization  "<<sim_cycle<<"\n";
 
 		rip = ripstart + 2;
+                logfile <<"rip: "<<rip<<" ripstart: "<<ripstart<<"\n";
     EndOfDecode();
     
 
