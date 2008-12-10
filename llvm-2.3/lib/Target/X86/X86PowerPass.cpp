@@ -80,6 +80,7 @@ namespace {
           // Get the instruction's mask and OR it with the current mask.
           MachineInstr &MI=*it;
           gatingmask_t tempMask=X86InstrInfo::getGatingMask(&MI);
+		  //cout << "[DEBUG] Instruction: " << MI << std::endl;
           if(tempMask==(gatingmask_t)(-1))
           {
             cout << "\tWARNING: Instruction: "<<MI<<"\treturned: "<<std::hex<<tempMask<<std::dec<<std::endl;
@@ -93,7 +94,11 @@ namespace {
       if(ml!=NULL)
       {
         MachineBasicBlock * preheader=ml->getLoopPreheader();
-        insertGatingInstruction(finalMask, preheader->begin());
+		//// Brooks
+		//// Moved gating instruction to be added at the end of the preheader
+		//// This is for optimizing non-loops
+		////
+        insertGatingInstruction(finalMask, --preheader->end());
         cout<<"Optimizing LOOP... moving instruction in the PRE-HEADER"<<std::endl;
       }
       else
@@ -279,7 +284,8 @@ namespace {
 
 		// else add the gating mask
 		else {
-			MachineInstr * MI = BuildMI(*(I->getParent()), I, TII->get(X86::GATE)).addImm(bitVector);
+			//MachineInstr * MI = BuildMI(*(I->getParent()), I, TII->get(X86::GATE)).addImm(bitVector);
+			BuildMI(*(I->getParent()), I, TII->get(X86::GATE)).addImm(bitVector);
 		}
 	}
 
