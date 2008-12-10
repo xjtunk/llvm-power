@@ -62,6 +62,9 @@
 	case X86::LD_Fp64m80: 
 	case X86::LD_Fp80m: 
 	case X86::LD_Frr:
+	case X86::FLDCW16m:
+	case X86::LDDQUrm:
+	case X86::LDMXCSR:
 	case X86::RDTSC:
 		return turnOnFUT(2, FUT_LOAD, FUT_AGU);
 		break;
@@ -1332,7 +1335,6 @@
 	case X86::EH_RETURN:
 	case X86::EXTRACTPSmr:
 	case X86::EXTRACTPSrr:
-	case X86::FLDCW16m:
 	case X86::FNSTCW16m:
 	case X86::FNSTSW8r:
 	case X86::INSERTPSrm:
@@ -1381,8 +1383,6 @@
 	case X86::LCMPXCHG64:
 	case X86::LCMPXCHG8:
 	case X86::LCMPXCHG8B:
-	case X86::LDDQUrm:
-	case X86::LDMXCSR:
 	case X86::LEAVE:
 	case X86::LEAVE64:
 	case X86::LFENCE:
