@@ -22,10 +22,11 @@ void function2(char * p)
 int main(int argc, char *argv[])
 {
 	// Dynamic optimizer test
-	double d=0;
+	double d=1.2, e=7.7;
 	int q = 7;
 	int r = 7;
 	int s = 7;
+	d = d * e;
 	printf("Running main\n");
 
 	for( unsigned int i=0 ; i<30 ; i++ )

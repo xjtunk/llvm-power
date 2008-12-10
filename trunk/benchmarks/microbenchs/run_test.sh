@@ -12,6 +12,6 @@ echo -------- multiloops.s --------
 cat $1.s
 echo
 echo -------- graphs --------
-opt -f -load ../../llvm-2.3/Release/lib/profile_rt.so -profile-loader -print-cfg $1.bc
+opt -f -load ../../llvm-2.3/Release/lib/profile_rt.so -profile-loader -print-cfg $1.bc > /dev/null
 dot -Tps -o $1.cfg.main.ps cfg.main.dot
-evince $1.cfg.main.ps
+evince $1.cfg.main.ps &
