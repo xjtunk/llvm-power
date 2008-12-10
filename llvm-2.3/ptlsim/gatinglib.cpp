@@ -169,7 +169,7 @@ tick_t FunctionalUnit::turnOff(const tick_t &now)
   	
   	totalPower +=  (powerConsumed - powerNotConsumed);
   	
-  	assert((powerConsumed - powerNotConsumed) >= 0);
+  	//assert((powerConsumed - powerNotConsumed) >= 0);
     
     //Find the intersection of the off transition curve and on transition curve 
     double transitionPoint = (onPower - currentPower) * ((double)offLatency/onPower);
@@ -239,7 +239,7 @@ tick_t FunctionalUnit::turnOn(const tick_t &now)
   
   	//Subtract larger triangle from smaller one
   	totalPower += (powerTotal - powerNotConsumed);
-  	assert((powerTotal - powerNotConsumed) >= 0);
+  	//assert((powerTotal - powerNotConsumed) >= 0);
   	//calculate transition point, and new latency
   	transitionPoint = currentPower*((double)onLatency/onPower);
   	
