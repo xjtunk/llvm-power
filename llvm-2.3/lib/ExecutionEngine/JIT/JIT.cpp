@@ -36,6 +36,8 @@
 #include "llvm/Analysis/ProfileInfoLoader.h"
 #include  "llvm/Analysis/Passes.h"
 
+#include  "../../../ptlsim/ptlcalls.h"
+
 using namespace llvm;
 
 #ifdef __APPLE__ 
@@ -146,6 +148,12 @@ GenericValue JIT::runFunction(Function *F,
 
   //// Brooks
   //// X86 Opcode 0x0f39 called here
+  cout<<"****** SWITCHING TO SIMULATION MODE FROM NATIVE MODE ***** \n";
+  ptlcall_switch_to_sim();
+  cout<<"____ SIWTCH DONE ____ \n";
+
+  int * a=(int*)0x85df65d;
+  cout<<"Value: "<<std::hex<<*(a)<<" "<<*(a+1)<<"\n";
   asm(".byte 0x0f; .byte 0x39;");
 
   // Handle some common cases first.  These cases correspond to common `main'

@@ -68,7 +68,7 @@ enum {
   PTLCALL_SWITCH_TO_SIM = 2,
   PTLCALL_SWITCH_TO_NATIVE = 3,
   PTLCALL_CAPTURE_STATS = 4,
-  PTLCALL_COUNT,
+  PTLCALL_COUNT
 };
 
 // Put at start of address space where nothing normally goes
