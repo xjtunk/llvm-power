@@ -36,7 +36,7 @@ class FunctionalUnit
 {
 public:
 	FunctionalUnit(char* _name, tick_t _onLatency, tick_t _offLatency, power_t _onPower);
-
+	FunctionalUnit(char* _name, tick_t _onLatency, tick_t _offLatency, power_t _onPower, bool _valid);
 
 	//Interface Methods
 	tick_t turnOn(const tick_t &now);
