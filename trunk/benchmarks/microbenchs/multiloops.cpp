@@ -12,6 +12,7 @@ void function1(char * p)
 	///  }
 	double d=0;
 	d++;
+	d *= 3.4;
 	function2(p);
 }
 
@@ -55,9 +56,10 @@ int main(int argc, char *argv[])
 			q *= 2;
 			for (int k = 0; k < 30; k++) {
 				s++;
+				d *= e * 3.4;
 			}
 		}
 	}
 
-	printf("Done\n");
+	printf("Done %f %f %d\n", d, e, q);
 }
