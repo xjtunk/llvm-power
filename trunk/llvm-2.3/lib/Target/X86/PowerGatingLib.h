@@ -595,6 +595,90 @@
 		return turnOnFUT(4, FUT_CMP, FUT_LOAD, FUT_STORE, FUT_AGU);
 		break;
 
+	// CVT ops - convert single to double precision FP
+	case X86::CVTSD2SSrm:
+	case X86::CVTSD2SSrr:
+	case X86::CVTSI2SD64rm:
+	case X86::CVTSI2SD64rr:
+	case X86::CVTSI2SDrm:
+	case X86::CVTSI2SDrr:
+	case X86::CVTSI2SS64rm:
+	case X86::CVTSI2SS64rr:
+	case X86::CVTSI2SSrm:
+	case X86::CVTSI2SSrr:
+	case X86::CVTSS2SDrm:
+	case X86::CVTSS2SDrr:
+	case X86::CVTTSD2SI64rm:
+	case X86::CVTTSD2SI64rr:
+	case X86::CVTTSD2SIrm:
+	case X86::CVTTSD2SIrr:
+	case X86::CVTTSS2SI64rm:
+	case X86::CVTTSS2SI64rr:
+	case X86::CVTTSS2SIrm:
+	case X86::CVTTSS2SIrr:
+		return turnOnFUT(4, FUT_FP_ADD, FUT_LOAD, FUT_STORE, FUT_AGU);
+		break;
+
+	// Integer CVT ops
+	case X86::Int_CVTDQ2PDrm:
+	case X86::Int_CVTDQ2PDrr:
+	case X86::Int_CVTDQ2PSrm:
+	case X86::Int_CVTDQ2PSrr:
+	case X86::Int_CVTPD2DQrm:
+	case X86::Int_CVTPD2DQrr:
+	case X86::Int_CVTPD2PIrm:
+	case X86::Int_CVTPD2PIrr:
+	case X86::Int_CVTPD2PSrm:
+	case X86::Int_CVTPD2PSrr:
+	case X86::Int_CVTPI2PDrm:
+	case X86::Int_CVTPI2PDrr:
+	case X86::Int_CVTPI2PSrm:
+	case X86::Int_CVTPI2PSrr:
+	case X86::Int_CVTPS2DQrm:
+	case X86::Int_CVTPS2DQrr:
+	case X86::Int_CVTPS2PDrm:
+	case X86::Int_CVTPS2PDrr:
+	case X86::Int_CVTPS2PIrm:
+	case X86::Int_CVTPS2PIrr:
+	case X86::Int_CVTSD2SI64rm:
+	case X86::Int_CVTSD2SI64rr:
+	case X86::Int_CVTSD2SIrm:
+	case X86::Int_CVTSD2SIrr:
+	case X86::Int_CVTSD2SSrm:
+	case X86::Int_CVTSD2SSrr:
+	case X86::Int_CVTSI2SD64rm:
+	case X86::Int_CVTSI2SD64rr:
+	case X86::Int_CVTSI2SDrm:
+	case X86::Int_CVTSI2SDrr:
+	case X86::Int_CVTSI2SS64rm:
+	case X86::Int_CVTSI2SS64rr:
+	case X86::Int_CVTSI2SSrm:
+	case X86::Int_CVTSI2SSrr:
+	case X86::Int_CVTSS2SDrm:
+	case X86::Int_CVTSS2SDrr:
+	case X86::Int_CVTSS2SI64rm:
+	case X86::Int_CVTSS2SI64rr:
+	case X86::Int_CVTSS2SIrm:
+	case X86::Int_CVTSS2SIrr:
+	case X86::Int_CVTTPD2DQrm:
+	case X86::Int_CVTTPD2DQrr:
+	case X86::Int_CVTTPD2PIrm:
+	case X86::Int_CVTTPD2PIrr:
+	case X86::Int_CVTTPS2DQrm:
+	case X86::Int_CVTTPS2DQrr:
+	case X86::Int_CVTTPS2PIrm:
+	case X86::Int_CVTTPS2PIrr:
+	case X86::Int_CVTTSD2SI64rm:
+	case X86::Int_CVTTSD2SI64rr:
+	case X86::Int_CVTTSD2SIrm:
+	case X86::Int_CVTTSD2SIrr:
+	case X86::Int_CVTTSS2SI64rm:
+	case X86::Int_CVTTSS2SI64rr:
+	case X86::Int_CVTTSS2SIrm:
+	case X86::Int_CVTTSS2SIrr:
+		return turnOnFUT(4, FUT_INT_ADD_ARITH, FUT_LOAD, FUT_STORE, FUT_AGU);
+		break;
+
 	// MMX ops
 	case X86::MMX_CVTPD2PIrm:
 	case X86::MMX_CVTPD2PIrr:
@@ -1217,26 +1301,6 @@
 	case X86::COS_Fp64:
 	case X86::COS_Fp80:
 	case X86::CQO:
-	case X86::CVTSD2SSrm:
-	case X86::CVTSD2SSrr:
-	case X86::CVTSI2SD64rm:
-	case X86::CVTSI2SD64rr:
-	case X86::CVTSI2SDrm:
-	case X86::CVTSI2SDrr:
-	case X86::CVTSI2SS64rm:
-	case X86::CVTSI2SS64rr:
-	case X86::CVTSI2SSrm:
-	case X86::CVTSI2SSrr:
-	case X86::CVTSS2SDrm:
-	case X86::CVTSS2SDrr:
-	case X86::CVTTSD2SI64rm:
-	case X86::CVTTSD2SI64rr:
-	case X86::CVTTSD2SIrm:
-	case X86::CVTTSD2SIrr:
-	case X86::CVTTSS2SI64rm:
-	case X86::CVTTSS2SI64rr:
-	case X86::CVTTSS2SIrm:
-	case X86::CVTTSS2SIrr:
 	case X86::CWD:
 	case X86::CWDE:
 	case X86::DPPDrmi: case X86::DPPDrri: case X86::DPPSrmi: case X86::DPPSrri:
@@ -1283,62 +1347,6 @@
 	case X86::Int_COMISDrr:
 	case X86::Int_COMISSrm:
 	case X86::Int_COMISSrr:
-	case X86::Int_CVTDQ2PDrm:
-	case X86::Int_CVTDQ2PDrr:
-	case X86::Int_CVTDQ2PSrm:
-	case X86::Int_CVTDQ2PSrr:
-	case X86::Int_CVTPD2DQrm:
-	case X86::Int_CVTPD2DQrr:
-	case X86::Int_CVTPD2PIrm:
-	case X86::Int_CVTPD2PIrr:
-	case X86::Int_CVTPD2PSrm:
-	case X86::Int_CVTPD2PSrr:
-	case X86::Int_CVTPI2PDrm:
-	case X86::Int_CVTPI2PDrr:
-	case X86::Int_CVTPI2PSrm:
-	case X86::Int_CVTPI2PSrr:
-	case X86::Int_CVTPS2DQrm:
-	case X86::Int_CVTPS2DQrr:
-	case X86::Int_CVTPS2PDrm:
-	case X86::Int_CVTPS2PDrr:
-	case X86::Int_CVTPS2PIrm:
-	case X86::Int_CVTPS2PIrr:
-	case X86::Int_CVTSD2SI64rm:
-	case X86::Int_CVTSD2SI64rr:
-	case X86::Int_CVTSD2SIrm:
-	case X86::Int_CVTSD2SIrr:
-	case X86::Int_CVTSD2SSrm:
-	case X86::Int_CVTSD2SSrr:
-	case X86::Int_CVTSI2SD64rm:
-	case X86::Int_CVTSI2SD64rr:
-	case X86::Int_CVTSI2SDrm:
-	case X86::Int_CVTSI2SDrr:
-	case X86::Int_CVTSI2SS64rm:
-	case X86::Int_CVTSI2SS64rr:
-	case X86::Int_CVTSI2SSrm:
-	case X86::Int_CVTSI2SSrr:
-	case X86::Int_CVTSS2SDrm:
-	case X86::Int_CVTSS2SDrr:
-	case X86::Int_CVTSS2SI64rm:
-	case X86::Int_CVTSS2SI64rr:
-	case X86::Int_CVTSS2SIrm:
-	case X86::Int_CVTSS2SIrr:
-	case X86::Int_CVTTPD2DQrm:
-	case X86::Int_CVTTPD2DQrr:
-	case X86::Int_CVTTPD2PIrm:
-	case X86::Int_CVTTPD2PIrr:
-	case X86::Int_CVTTPS2DQrm:
-	case X86::Int_CVTTPS2DQrr:
-	case X86::Int_CVTTPS2PIrm:
-	case X86::Int_CVTTPS2PIrr:
-	case X86::Int_CVTTSD2SI64rm:
-	case X86::Int_CVTTSD2SI64rr:
-	case X86::Int_CVTTSD2SIrm:
-	case X86::Int_CVTTSD2SIrr:
-	case X86::Int_CVTTSS2SI64rm:
-	case X86::Int_CVTTSS2SI64rr:
-	case X86::Int_CVTTSS2SIrm:
-	case X86::Int_CVTTSS2SIrr:
 	case X86::Int_UCOMISDrm:
 	case X86::Int_UCOMISDrr:
 	case X86::Int_UCOMISSrm:
